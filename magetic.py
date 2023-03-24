@@ -13,6 +13,7 @@ def calculate_L(noeh_dipole, energy_dft, nk, nv, nc ):
     eVtoJ = 1.602177e-19 # electron volt = ？Joule
     p_ry_to_SI = 1.9928534e-24 # convert momentum operator to SI unit # ??
     fact = (p_ry_to_SI ** 2) / m0 / eVtoJ # pre factor
+    fact = 1 #test
     datax = noeh_dipole[:, :, :, 0]
     datay = noeh_dipole[:,:,:,1]
     dataz = noeh_dipole[:, :, :, 2]
@@ -47,6 +48,7 @@ def calculate_ElectricDipole(noeh_dipole, nk, nv, nc, energy_dft):
     eVtoJ = 1.602177e-19
     p_ry_to_SI = 1.9928534e-24
     fact = (p_ry_to_SI ** 2) / m0 / eVtoJ   # why there is a **2 ?
+    fact = 1 #test
     E = noeh_dipole[:,0:nv,nv:nc+nv,:]*fact
     return E
 
