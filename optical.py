@@ -14,6 +14,7 @@ def calculate_epsR_epsL(nk,MM, ME, excited_energy, nxct, W, eta, volume):
         #E = (ME[s, 0] + 1j * ME[s, 1]) / 2.17 / 2 ** 0.5
         E = (ME[s, 0] + 1j * ME[s, 1]) / 2 ** 0.5
         M = (-1j * MM[s, 0] + MM[s, 1]) / 2 ** 0.5/(-20)
+        #M = (MM[s, 0] + 1j*MM[s, 1]) / 2 ** 0.5 / (-20)
         #Y1 += (abs(M + E)) ** 2 * np.exp(-alpha * (W - energyDif) ** 2)
         Y1 += (abs(M + E)) ** 2 * delta_lorentzian(W/RYD, energyDif/RYD, eta/RYD)/(energyDif/RYD)**2
         #Y1 += np.imag(E)* delta_lorentzian(W / RYD, energyDif / RYD, eta / RYD)
@@ -21,6 +22,7 @@ def calculate_epsR_epsL(nk,MM, ME, excited_energy, nxct, W, eta, volume):
         #E = (ME[s, 0] - 1j * ME[s, 1]) / 2.17 / 2 ** 0.5
         E = (ME[s, 0] - 1j * ME[s, 1]) / 2 ** 0.5
         M = (1j * MM[s, 0] + MM[s, 1]) / 2 ** 0.5/(-20)
+        #M = (MM[s, 0] - 1j*MM[s, 1]) / 2 ** 0.5 / (-20)
         #Y2 += (abs(M + E)) ** 2 * np.exp(-alpha * (W - energyDif) ** 2)
         Y2 += (abs(M + E)) ** 2 * delta_lorentzian(W/RYD, energyDif/RYD, eta/RYD)/(energyDif/RYD)**2
         #Y2 += np.imag(E) ** 2 * delta_lorentzian(W / RYD, energyDif / RYD, eta / RYD)
@@ -127,5 +129,95 @@ def calculate_absorption_noeh(noeh_dipole, nk, nv, nc, energy_dft, W, eta, volum
 
     data = np.array([W, Y1, Y2, Y])
     np.savetxt('absp.dat', data.T)
+
+    return Y, Y1, Y2
+
+def calculate_m(nk,MM, ME, excited_energy, nxct, W, eta, volume):
+    pref = 16.0 * np.pi**2/volume/nk
+    RYD = 13.6057039763
+    Y = np.zeros_like(W)
+    Y1 = np.zeros_like(W)
+    Y2 = np.zeros_like(W)
+    for s in range(nxct):
+        energyDif = excited_energy[s]
+        #E = (ME[s, 0] + 1j * ME[s, 1]) / 2.17 / 2 ** 0.5
+        M = (-1j * MM[s, 0] + MM[s, 1]) / 2 ** 0.5/(-2)
+        #M = (MM[s, 0] + 1j*MM[s, 1]) / 2 ** 0.5 / (-20)
+        #Y1 += (abs(M + E)) ** 2 * np.exp(-alpha * (W - energyDif) ** 2)
+        Y1 += (abs(M)) ** 2 * delta_lorentzian(W/RYD, energyDif/RYD, eta/RYD)/(energyDif/RYD)**2
+        #Y1 += np.imag(E)* delta_lorentzian(W / RYD, energyDif / RYD, eta / RYD)
+
+        #E = (ME[s, 0] - 1j * ME[s, 1]) / 2.17 / 2 ** 0.5
+        M = (1j * MM[s, 0] + MM[s, 1]) / 2 ** 0.5/(-2)
+        #M = (MM[s, 0] - 1j*MM[s, 1]) / 2 ** 0.5 / (-20)
+        #Y2 += (abs(M + E)) ** 2 * np.exp(-alpha * (W - energyDif) ** 2)
+        Y2 += (abs(M)) ** 2 * delta_lorentzian(W/RYD, energyDif/RYD, eta/RYD)/(energyDif/RYD)**2
+        #Y2 += np.imag(E) ** 2 * delta_lorentzian(W / RYD, energyDif / RYD, eta / RYD)
+    Y = Y1 - Y2
+
+    Y *= pref
+    Y1 *= pref
+    Y2 *= pref
+
+    # Y[1:] /= (W[1:] ** 2 * (1.6E-19) ** 2)
+    # Y1[1:] /= (W[1:] ** 2 * (1.6E-19) ** 2)
+    # Y2[1:] /= (W[1:] ** 2 * (1.6E-19) ** 2)
+    # Y[1:] /= ((W[1:]/RYD) ** 2)
+    # Y1[1:] /= ((W[1:]/RYD) ** 2)
+    # Y2[1:] /= ((W[1:]/RYD) ** 2)
+
+    plt.figure()
+    plt.plot(W, Y, 'r')
+    plt.plot(W, Y1, 'b')
+    plt.plot(W, Y2, 'g')
+    plt.show()
+
+    data = np.array([W, Y1, Y2, Y])
+    np.savetxt('CD.dat', data.T)
+
+    return Y, Y1, Y2
+
+def calculate_m(nk,MM, ME, excited_energy, nxct, W, eta, volume):
+    pref = 16.0 * np.pi**2/volume/nk
+    RYD = 13.6057039763
+    Y = np.zeros_like(W)
+    Y1 = np.zeros_like(W)
+    Y2 = np.zeros_like(W)
+    for s in range(nxct):
+        energyDif = excited_energy[s]
+        #E = (ME[s, 0] + 1j * ME[s, 1]) / 2.17 / 2 ** 0.5
+        M = (-1j * MM[s, 0] + MM[s, 1]) / 2 ** 0.5/(-2)
+        #M = (MM[s, 0] + 1j*MM[s, 1]) / 2 ** 0.5 / (-20)
+        #Y1 += (abs(M + E)) ** 2 * np.exp(-alpha * (W - energyDif) ** 2)
+        Y1 += (abs(M)) ** 2 * delta_lorentzian(W/RYD, energyDif/RYD, eta/RYD)/(energyDif/RYD)**2
+        #Y1 += np.imag(E)* delta_lorentzian(W / RYD, energyDif / RYD, eta / RYD)
+
+        #E = (ME[s, 0] - 1j * ME[s, 1]) / 2.17 / 2 ** 0.5
+        M = (1j * MM[s, 0] + MM[s, 1]) / 2 ** 0.5/(-2)
+        #M = (MM[s, 0] - 1j*MM[s, 1]) / 2 ** 0.5 / (-20)
+        #Y2 += (abs(M + E)) ** 2 * np.exp(-alpha * (W - energyDif) ** 2)
+        Y2 += (abs(M)) ** 2 * delta_lorentzian(W/RYD, energyDif/RYD, eta/RYD)/(energyDif/RYD)**2
+        #Y2 += np.imag(E) ** 2 * delta_lorentzian(W / RYD, energyDif / RYD, eta / RYD)
+    Y = Y1 - Y2
+
+    Y *= pref
+    Y1 *= pref
+    Y2 *= pref
+
+    # Y[1:] /= (W[1:] ** 2 * (1.6E-19) ** 2)
+    # Y1[1:] /= (W[1:] ** 2 * (1.6E-19) ** 2)
+    # Y2[1:] /= (W[1:] ** 2 * (1.6E-19) ** 2)
+    # Y[1:] /= ((W[1:]/RYD) ** 2)
+    # Y1[1:] /= ((W[1:]/RYD) ** 2)
+    # Y2[1:] /= ((W[1:]/RYD) ** 2)
+
+    plt.figure()
+    plt.plot(W, Y, 'r')
+    plt.plot(W, Y1, 'b')
+    plt.plot(W, Y2, 'g')
+    plt.show()
+
+    data = np.array([W, Y1, Y2, Y])
+    np.savetxt('CD.dat', data.T)
 
     return Y, Y1, Y2

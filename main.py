@@ -4,7 +4,7 @@ from reader import read_noeh_dipole, dft_energy_reader, avck_reader, excited_ene
 from mpi import MPI, comm, size, rank
 from magetic import calculate_L, calculate_ElectricDipole, calculate_MM_ME
 import matplotlib.pyplot as plt
-from optical import calculate_epsR_epsL, calculate_absorption_eh, calculate_absorption_noeh
+from optical import calculate_epsR_epsL, calculate_absorption_eh, calculate_absorption_noeh, calculate_m
 from input import *
 
 noeh_dipole = read_noeh_dipole(nk, nc + nv, input_folder)  # dim [nk, nb, nb, 3], read <nk|p|mk>
@@ -22,14 +22,14 @@ excited_energy = excited_energy_reader(nxct, input_folder)
 MM, ME = calculate_MM_ME(nc, nv, nk, nxct, avck, E_kvc, L_kvc)
 
 
-W = np.linspace(1, 5, 1000)
+W = np.linspace(1.5, 2.5, 1000)
 eta = 0.05
 
 
 volume = volume_reader(input_folder)
 
-calculate_epsR_epsL(nk,MM, ME, excited_energy, nxct, W, eta, volume)
+#calculate_epsR_epsL(nk,MM, ME, excited_energy, nxct, W, eta, volume)
 #calculate_absorption_eh(nk, MM, ME, excited_energy, nxct, W, eta, volume)
 #calculate_absorption_noeh (noeh_dipole, nk, nv, nc, energy_dft, W, eta, volume)
-
+calculate_m(nk,MM, ME, excited_energy, nxct, W, eta, volume)
 print('test')
