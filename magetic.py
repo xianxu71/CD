@@ -9,11 +9,11 @@ def calculate_L(noeh_dipole, energy_dft, nk, nv, nc ):
 
     '''
 
-    m0 = 9.10938356e-31 # mass of electrons
-    eVtoJ = 1.602177e-19 # electron volt = ？Joule
-    p_ry_to_SI = 1.9928534e-24 # convert momentum operator to SI unit # ??
-    fact = (p_ry_to_SI ** 2) / m0 / eVtoJ # pre factor
-    fact = 1 #test
+    # m0 = 9.10938356e-31 # mass of electrons
+    # eVtoJ = 1.602177e-19 # electron volt = ？Joule
+    # p_ry_to_SI = 1.9928534e-24 # convert momentum operator to SI unit # ??
+    # fact = (p_ry_to_SI ** 2) / m0 / eVtoJ # pre factor
+    fact = 1
     datax = noeh_dipole[:, :, :, 0]
     datay = noeh_dipole[:,:,:,1]
     dataz = noeh_dipole[:, :, :, 2]
@@ -28,7 +28,7 @@ def calculate_L(noeh_dipole, energy_dft, nk, nv, nc ):
         energy_diff_inverse = 1 / energy_diff
         energy_diff_inverse[energy_diff == 0] = 0
 
-    totx = np.einsum('kvm,kvm,kmc-> kvc' , datay[:,0:nv,:], energy_diff_inverse,dataz[:,:,nv:nv+nc]) - \
+    totx = np.einsum('kvm,kvm,kmc-> kvc' , datay[:,0:nv,:],energy_diff_inverse,dataz[:,:,nv:nv+nc]) - \
            np.einsum('kvm,kvm,kmc-> kvc' , dataz[:,0:nv,:],energy_diff_inverse,datay[:,:,nv:nv+nc])
     toty = np.einsum('kvm,kvm,kmc-> kvc' , dataz[:,0:nv,:],energy_diff_inverse,datax[:,:,nv:nv+nc]) - \
            np.einsum('kvm,kvm,kmc-> kvc' , datax[:,0:nv,:],energy_diff_inverse,dataz[:,:,nv:nv+nc])
@@ -44,10 +44,10 @@ def calculate_ElectricDipole(noeh_dipole, nk, nv, nc, energy_dft):
     '''
     # dim [nk,nv,nc,3], electric dipole
     '''
-    m0 = 9.10938356e-31
-    eVtoJ = 1.602177e-19
-    p_ry_to_SI = 1.9928534e-24
-    fact = (p_ry_to_SI ** 2) / m0 / eVtoJ   # why there is a **2 ?
+    # m0 = 9.10938356e-31
+    # eVtoJ = 1.602177e-19
+    # p_ry_to_SI = 1.9928534e-24
+    # fact = (p_ry_to_SI ** 2) / m0 / eVtoJ   # why there is a **2 ?
     fact = 1 #test
     E = noeh_dipole[:,0:nv,nv:nc+nv,:]*fact
     return E
