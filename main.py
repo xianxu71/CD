@@ -7,11 +7,11 @@ import matplotlib.pyplot as plt
 from optical import calculate_epsR_epsL_eh, calculate_absorption_eh, calculate_absorption_noeh, calculate_m, calculate_epsR_epsL_noeh
 from input import *
 
-noeh_dipole = read_noeh_dipole(nk, nc + nv, input_folder)  # dim [nk, nb, nb, 3], read <nk|p|mk>
+noeh_dipole_full, noeh_dipole = read_noeh_dipole(nk, nv, nc, input_folder, nv_for_r, nc_for_r)  # dim [nk, nb, nb, 3], read <nk|p|mk>
 
-energy_dft = dft_energy_reader(nk, nc, nv, hovb, input_folder)  # dim [nk,nb], read dft level energy of each band
+energy_dft_full, energy_dft = dft_energy_reader(nk, nc, nv, hovb, input_folder, nv_for_r, nc_for_r)  # dim [nk,nb], read dft level energy of each band
 
-L_kvc = calculate_L(noeh_dipole, energy_dft, nk, nv, nc)  # dim [nk,nv,nc,3], orbital angular momentum
+L_kvc = calculate_L(noeh_dipole_full, energy_dft_full, nk, nv, nc, nv_for_r, nc_for_r)  # dim [nk,nv,nc,3], orbital angular momentum
 
 E_kvc = calculate_ElectricDipole(noeh_dipole, nk, nv, nc, energy_dft)  # dim [nk,nv,nc,3], electric dipole
 
@@ -28,9 +28,9 @@ eta = 0.05
 
 volume = volume_reader(input_folder)
 
-calculate_epsR_epsL_eh(nk,MM, ME, excited_energy, nxct, W, eta, volume)
+#calculate_epsR_epsL_eh(nk,MM, ME, excited_energy, nxct, W, eta, volume)
 #calculate_absorption_eh(nk, MM, ME, excited_energy, nxct, W, eta, volume)
-#calculate_absorption_noeh (noeh_dipole, nk, nv, nc, energy_dft, W, eta, volume)
+calculate_absorption_noeh (noeh_dipole, nk, nv, nc, energy_dft, W, eta, volume)
 #calculate_m(nk,MM, ME, excited_energy, nxct, W, eta, volume)
 #calculate_epsR_epsL_noeh(E_kvc, L_kvc,nk, nv, nc, energy_dft, W, eta, volume)
 print('test')

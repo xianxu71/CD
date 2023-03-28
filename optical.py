@@ -149,9 +149,9 @@ def calculate_absorption_noeh(noeh_dipole, nk, nv, nc, energy_dft, W, eta, volum
         for iv in range(nv):
             for ic in range(nc):
                 energyDif = energy_dft[ik,ic+nv]-energy_dft[ik,iv]
-                Y1 += np.abs(noeh_dipole[ik,iv,ic+nv,0])**2 * delta_lorentzian(W/RYD, energyDif, eta/RYD)/(energyDif**2)
-                Y2 += np.abs(noeh_dipole[ik, iv, ic + nv, 1]) ** 2 * delta_lorentzian(W / RYD, energyDif,
-                                                                                      eta / RYD)/(energyDif**2)
+                Y1 += np.abs(noeh_dipole[ik,iv,ic+nv,0])**2 * (delta_lorentzian(W/RYD, energyDif, eta/RYD)-delta_lorentzian(-W/RYD, energyDif, eta/RYD))/(energyDif**2)
+                Y2 += np.abs(noeh_dipole[ik, iv, ic + nv, 1]) ** 2 * (delta_lorentzian(W / RYD, energyDif,
+                                                                                      eta / RYD)-delta_lorentzian(-W/RYD, energyDif, eta/RYD))/(energyDif**2)
 
 
     Y = Y1 - Y2

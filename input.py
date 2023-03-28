@@ -11,6 +11,19 @@ nxct = 4000
 
 input_folder = './'
 
+
+# nk = 12 * 12 * 2
+# nc = 4
+# nv = 4
+#
+# nc_for_r = 50
+# nv_for_r = 50
+#
+# hovb = 560 # index of the highest occupied band
+# nxct = 4000
+#
+# input_folder = './SMBA2PbI4/'
+
 # nk = 8 * 8 * 8
 # nc = 3
 # nv = 3

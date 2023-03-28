@@ -49,7 +49,7 @@ def vmtxel_sort(vm):
     f_new.close()
 
 
-def read_noeh_dipole(nk, nb, input_folder):
+def read_noeh_dipole(nk, nv, nc , input_folder, nv_for_r, nc_for_r):
     '''
     read read <nk|p|mk> from vmtxel_nl*dat
 
@@ -74,7 +74,10 @@ def read_noeh_dipole(nk, nb, input_folder):
     header = file_1.readline()
     header = file_2.readline()
     header = file_3.readline()
-    noeh_dipole = np.zeros([nk, nb, nb, 3], dtype=np.complex)
+    nb = nv_for_r+nc_for_r
+    nb2 = nv + nc
+    noeh_dipole_full = np.zeros([nk, nb, nb, 3], dtype=np.complex)
+    noeh_dipole_partial = np.zeros([nk, nb2, nb2, 3], dtype=np.complex)
     for ik in range(0, nk):
         for ib1 in range(0, nb):
             for ib2 in range(0, nb):
@@ -98,14 +101,14 @@ def read_noeh_dipole(nk, nb, input_folder):
                 v2 = v2_real + 1j * v2_imag
                 v3 = v3_real + 1j * v3_imag
 
-                noeh_dipole[ik, ib1, ib2, 0] = v1
-                noeh_dipole[ik, ib1, ib2, 1] = v2
-                noeh_dipole[ik, ib1, ib2, 2] = v3
+                noeh_dipole_full[ik, ib1, ib2, 0] = v1
+                noeh_dipole_full[ik, ib1, ib2, 1] = v2
+                noeh_dipole_full[ik, ib1, ib2, 2] = v3
+    noeh_dipole_partial = noeh_dipole_full[:,nv_for_r-nv:nv_for_r+nc,nv_for_r-nv:nv_for_r+nc,:]
+    return noeh_dipole_full, noeh_dipole_partial
 
-    return noeh_dipole
 
-
-def dft_energy_reader(nk, nc, nv, hovb, input_folder):
+def dft_energy_reader(nk, nc, nv, hovb, input_folder, nv_for_r, nc_for_r):
     '''
     read dft level energy of each band
 
@@ -120,10 +123,10 @@ def dft_energy_reader(nk, nc, nv, hovb, input_folder):
     '''
     input_file = input_folder+'eigenvectors.h5'
     f = h5.File(input_file, 'r')
-    energy = f['mf_header/kpoints/el'][()]
-    energy = energy[0, :, hovb - nv: hovb + nc]
+    energy_full = f['mf_header/kpoints/el'][()]
+    energy = energy_full[0, :, hovb - nv: hovb + nc]
     f.close()
-    return energy
+    return energy_full[0, :, hovb - nv_for_r: hovb + nc_for_r], energy
 
 def avck_reader(nxct,input_folder):
     input_file = input_folder+'eigenvectors.h5'
