@@ -152,7 +152,7 @@ def calculate_absorption_eh(nk,MM, ME, excited_energy, nxct, W, eta, volume):
 
     return
 
-def calculate_absorption_noeh(noeh_dipole, nk, nv, nc, energy_dft, W, eta, volume):
+def calculate_absorption_noeh(noeh_dipole, nk, nv, nc, energy_dft, W, eta, volume, use_eqp=False, eqp_corr = None):
     pref = 16.0 * np.pi**2/volume/nk
     RYD = 13.6057039763
     #Y = np.zeros_like(W)
@@ -164,9 +164,14 @@ def calculate_absorption_noeh(noeh_dipole, nk, nv, nc, energy_dft, W, eta, volum
         for iv in range(nv):
             for ic in range(nc):
                 energyDif = energy_dft[ik,ic+nv]-energy_dft[ik,iv]
-                eps_2 += np.abs(noeh_dipole[ik,iv,ic+nv,0])**2 * (delta_guass(W/RYD, energyDif, eta/RYD))/(energyDif**2)/2
+                if use_eqp:
+                    energyDif2 =energyDif + eqp_corr[ik,nv+ic]/RYD-eqp_corr[ik,iv]/RYD
+                else:
+                    energyDif2 =energyDif
+
+                eps_2 += np.abs(noeh_dipole[ik,iv,ic+nv,0])**2 * (delta_guass(W/RYD, energyDif2, eta/RYD))/(energyDif**2)/2
                 eps_1 += np.abs(noeh_dipole[ik, iv, ic + nv, 0]) ** 2 * (
-                    delta_lorentzian(W / RYD, energyDif, eta / RYD)) / (energyDif ** 2)*(energyDif-W/RYD)/eta/RYD/(energyDif)**2/np.sqrt(2)
+                    delta_lorentzian(W / RYD, energyDif2, eta / RYD)) / (energyDif ** 2)*(energyDif2-W/RYD)/eta * RYD/2
                 #Y2 += np.abs(noeh_dipole[ik, iv, ic + nv, 1]) ** 2 * (delta_lorentzian(W / RYD, energyDif,
                 #                                                                      eta / RYD)-delta_lorentzian(-W/RYD, energyDif, eta/RYD))/(energyDif**2)
 

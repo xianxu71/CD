@@ -151,3 +151,19 @@ def volume_reader(input_folder):
     volume = f['mf_header/crystal/celvol'][()]
     f.close()
     return volume
+
+def eqp_reader(nk, nc, nv, input_folder):
+    input_file = input_folder + 'eqp.dat'
+    print('\n  Loading quasi-particle energy from {0:s}'.format('eqp.dat'))
+    data = np.loadtxt(input_file)
+    eqp_corr=np.zeros([nk,nc+nv])
+    for ik in range(nk):
+        for ib in range(nc+nv):
+            eqp_corr[ik,ib]=data[ik*(nc+nv+1)+ib+1,3]-data[ik*(nc+nv+1)+ib+1,2]
+    return eqp_corr
+
+
+
+
+
+

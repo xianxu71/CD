@@ -11,6 +11,8 @@ nxct = 4500
 
 input_folder = './'
 
+use_eqp = True
+
 
 # nk = 12 * 12 * 2
 # nc = 4
