@@ -22,7 +22,7 @@ excited_energy = excited_energy_reader(nxct, input_folder)
 MM, ME = calculate_MM_ME(nc, nv, nk, nxct, avck, E_kvc, L_kvc)
 
 
-W = np.linspace(0.5, 3, 1000)
+W = np.linspace(0.1, 6, 4000)
 eta = 0.05
 
 
