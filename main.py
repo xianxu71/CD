@@ -24,15 +24,15 @@ excited_energy = excited_energy_reader(nxct, input_folder)
 MM, ME = calculate_MM_ME(nc, nv, nk, nxct, avck, E_kvc, L_kvc)
 
 
-W = np.linspace(0.1, 6, 4000)
+W = np.linspace(1.5, 2.5, 5000)
 eta = 0.05
 
 
 volume = volume_reader(input_folder)
 
-#calculate_epsR_epsL_eh(nk,MM, ME, excited_energy, nxct, W, eta, volume)
+calculate_epsR_epsL_eh(nk,MM, ME, excited_energy, nxct, W, eta, volume)
 #calculate_absorption_eh(nk, MM, ME, excited_energy, nxct, W, eta, volume)
-calculate_absorption_noeh (noeh_dipole, nk, nv, nc, energy_dft, W, eta, volume, use_eqp, eqp_corr)
+#calculate_absorption_noeh(noeh_dipole, nk, nv, nc, energy_dft, W, eta, volume, use_eqp, eqp_corr)
 #calculate_m(nk,MM, ME, excited_energy, nxct, W, eta, volume)
-#calculate_epsR_epsL_noeh(E_kvc, L_kvc,nk, nv, nc, energy_dft, W, eta, volume)
+#calculate_epsR_epsL_noeh(E_kvc, L_kvc,nk, nv, nc, energy_dft, W, eta, volume, use_eqp, eqp_corr)
 print('test')
