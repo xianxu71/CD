@@ -20,6 +20,7 @@ def calculate_L(noeh_dipole_full, energy_dft_full, nk, nv, nc, nv_for_r, nc_for_
 
     L = np.zeros([nk, nv_for_r, nc_for_r, 3], dtype=np.complex)
 
+
     Ekv = np.einsum('kv,m->kvm', energy_dft_full[:, 0:nv_for_r], np.ones(nv_for_r + nc_for_r))
     Ekm = np.einsum('km,v->kvm', energy_dft_full, np.ones(nv_for_r))
 
@@ -63,3 +64,48 @@ def calculate_MM_ME(nc,nv,nk,nxct,avck,E,L_kvc):
     MM = np.einsum('kvcs,kvcd->sd', avck, L_temp)
     ME = np.einsum('kvcs,kvcd->sd', avck, E_temp)
     return MM, ME
+
+def calculate_L2(noeh_dipole_full, energy_dft_full, nk, nv, nc, nv_for_r, nc_for_r,use_eqp, eqp_corr):
+    '''
+    # dim [nk,nv,nc,3], orbital angular momentum
+    calculate orbital angular momentum
+
+    noeh_dipole: dim: [nk, nb, nb, 3]
+
+    '''
+
+    # m0 = 9.10938356e-31 # mass of electrons
+    # eVtoJ = 1.602177e-19 # electron volt = ？Joule
+    # p_ry_to_SI = 1.9928534e-24 # convert momentum operator to SI unit # ??
+    # fact = (p_ry_to_SI ** 2) / m0 / eVtoJ # pre factor
+    fact = 1
+    RYD = 13.6057039763
+    datax = noeh_dipole_full[:, :, :, 0]
+    datay = noeh_dipole_full[:,:,:,1]
+    dataz = noeh_dipole_full[:, :, :, 2]
+
+    L = np.zeros([nk, nv_for_r, nc_for_r, 3], dtype=np.complex)
+
+    #print('test')
+
+    energy_dft_full = energy_dft_full + eqp_corr/RYD
+
+    Ekv = np.einsum('kv,m->kvm', energy_dft_full[:, 0:nv_for_r], np.ones(nv_for_r + nc_for_r))
+    Ekm = np.einsum('km,v->kvm', energy_dft_full, np.ones(nv_for_r))
+
+    energy_diff = (Ekv - Ekm)  # e_diff(k,v,m) = [E(k,v) - E(k,m)]^-1
+    with np.errstate(divide='ignore'):
+        energy_diff_inverse = 1 / energy_diff
+        energy_diff_inverse[energy_diff == 0] = 0
+
+    totx = np.einsum('kvm,kvm,kmc-> kvc' , datay[:,0:nv_for_r,:],energy_diff_inverse,dataz[:,:,nv_for_r:nv_for_r+nc_for_r]) - \
+           np.einsum('kvm,kvm,kmc-> kvc' , dataz[:,0:nv_for_r,:],energy_diff_inverse,datay[:,:,nv_for_r:nv_for_r+nc_for_r])
+    toty = np.einsum('kvm,kvm,kmc-> kvc' , dataz[:,0:nv_for_r,:],energy_diff_inverse,datax[:,:,nv_for_r:nv_for_r+nc_for_r]) - \
+           np.einsum('kvm,kvm,kmc-> kvc' , datax[:,0:nv_for_r,:],energy_diff_inverse,dataz[:,:,nv_for_r:nv_for_r+nc_for_r])
+    totz = np.einsum('kvm,kvm,kmc-> kvc' , datax[:,0:nv_for_r,:],energy_diff_inverse,datay[:,:,nv_for_r:nv_for_r+nc_for_r]) - \
+           np.einsum('kvm,kvm,kmc-> kvc' , datay[:,0:nv_for_r,:],energy_diff_inverse,datax[:,:,nv_for_r:nv_for_r+nc_for_r])
+    L[:, :, :, 0] = totx*fact
+    L[:, :, :, 1] = toty*fact
+    L[:, :, :, 2] = totz*fact
+
+    return L[:,nv_for_r-nv:nv_for_r,0:nc,:]

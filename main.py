@@ -2,7 +2,7 @@ import numpy as np
 import h5py
 from reader import read_noeh_dipole, dft_energy_reader, avck_reader, excited_energy_reader, volume_reader, eqp_reader
 from mpi import MPI, comm, size, rank
-from magetic import calculate_L, calculate_ElectricDipole, calculate_MM_ME
+from magetic import calculate_L, calculate_ElectricDipole, calculate_MM_ME,calculate_L2
 import matplotlib.pyplot as plt
 from optical import calculate_epsR_epsL_eh, calculate_absorption_eh, calculate_absorption_noeh, calculate_m, calculate_epsR_epsL_noeh
 from input import *
@@ -13,7 +13,8 @@ energy_dft_full, energy_dft = dft_energy_reader(nk, nc, nv, hovb, input_folder, 
 
 eqp_corr = eqp_reader(nk, nc, nv, input_folder)
 
-L_kvc = calculate_L(noeh_dipole_full, energy_dft_full, nk, nv, nc, nv_for_r, nc_for_r)  # dim [nk,nv,nc,3], orbital angular momentum
+#L_kvc = calculate_L(noeh_dipole_full, energy_dft_full, nk, nv, nc, nv_for_r, nc_for_r)  # dim [nk,nv,nc,3], orbital angular momentum
+L_kvc = calculate_L2(noeh_dipole_full, energy_dft_full, nk, nv, nc, nv_for_r, nc_for_r, use_eqp, eqp_corr)
 
 E_kvc = calculate_ElectricDipole(noeh_dipole, nk, nv, nc, energy_dft)  # dim [nk,nv,nc,3], electric dipole
 
@@ -24,15 +25,15 @@ excited_energy = excited_energy_reader(nxct, input_folder)
 MM, ME = calculate_MM_ME(nc, nv, nk, nxct, avck, E_kvc, L_kvc)
 
 
-W = np.linspace(1.5, 2.5, 5000)
-eta = 0.05
+W = np.linspace(1.5, 2.6, 2000)
+eta = 0.02
 
 
 volume = volume_reader(input_folder)
 
-calculate_epsR_epsL_eh(nk,MM, ME, excited_energy, nxct, W, eta, volume)
+#calculate_epsR_epsL_eh(nk,MM, ME, excited_energy, nxct, W, eta, volume)
 #calculate_absorption_eh(nk, MM, ME, excited_energy, nxct, W, eta, volume)
 #calculate_absorption_noeh(noeh_dipole, nk, nv, nc, energy_dft, W, eta, volume, use_eqp, eqp_corr)
-#calculate_m(nk,MM, ME, excited_energy, nxct, W, eta, volume)
+calculate_m(nk,MM, ME, excited_energy, nxct, W, eta, volume)
 #calculate_epsR_epsL_noeh(E_kvc, L_kvc,nk, nv, nc, energy_dft, W, eta, volume, use_eqp, eqp_corr)
 print('test')

@@ -1,17 +1,17 @@
-
-nk = 12 * 12 * 2
-nc = 4
-nv = 4
-
-nc_for_r = 4
-nv_for_r = 4
-
-hovb = 560 # index of the highest occupied band
-nxct = 4500
-
-input_folder = './'
-
-use_eqp = True
+#
+# nk = 12 * 12 * 2
+# nc = 4
+# nv = 4
+#
+# nc_for_r = 4
+# nv_for_r = 4
+#
+# hovb = 560 # index of the highest occupied band
+# nxct = 4500
+#
+# input_folder = './'
+#
+# use_eqp = True
 
 
 # nk = 12 * 12 * 2
@@ -51,19 +51,19 @@ use_eqp = True
 # input_folder = './Silicon/'
 
 
-# nk = 16 * 16 * 2
-# nc = 8
-# nv = 8
-#
-# nc_for_r = 20
-# nv_for_r = 20
-#
-# hovb = 560 # index of the highest occupied band
-# nxct = 4000
-#
-# input_folder = './SMBA2PbI4_442_16162_8_8/'
-#
-# use_eqp = True
+nk = 16 * 16 * 2
+nc = 8
+nv = 8
+
+nc_for_r = 20
+nv_for_r = 20
+
+hovb = 560 # index of the highest occupied band
+nxct = 4000
+
+input_folder = './SMBA2PbI4_442_16162_4_4/'
+
+use_eqp = True
 
 # nk = 12 * 12 * 2
 # nc = 8
