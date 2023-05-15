@@ -25,11 +25,11 @@ def calculate_epsR_epsL_noeh(E_kvc, L_kvc,nk, nv, nc, energy_dft, W, eta, volume
 
     E1 = (E_kvc[: , :, :, 0] + 1j * E_kvc[:, :, :, 1])
     # M = (-1j * MM[s, 0] + MM[s, 1]) / 2 ** 0.5/(-2)/5
-    M1 = (-1j * L_kvc[:,:,:,0] + L_kvc[:,:,:, 1]) / 2/nk
+    M1 = (1* L_kvc[:,:,:,0] + 1j* L_kvc[:,:,:, 1]) / 2/nk * (1j)
 
     E2 = (E_kvc[: , :, :, 0] - 1j * E_kvc[:, :, :, 1])
     # M = (-1j * MM[s, 0] + MM[s, 1]) / 2 ** 0.5/(-2)/5
-    M2 = (+1j * L_kvc[:,:,:,0] + L_kvc[:,:,:, 1]) / 2/nk
+    M2 = (- L_kvc[:,:,:,0] + 1j*  L_kvc[:,:,:, 1]) / 2/nk * (1j)
     for ik in range(nk):
         for iv in range(nv):
             for ic in range(nc):
@@ -137,7 +137,7 @@ def calculate_epsR_epsL_eh(nk,MM, ME, excited_energy, nxct, W, eta, volume):
         #E = (ME[s, 0] + 1j * ME[s, 1]) / 2.17 / 2 ** 0.5
         E_L = (ME[s, 0] + 1j * ME[s, 1])
         #M = (-1j * MM[s, 0] + MM[s, 1]) / 2 ** 0.5/(-2)/5
-        M_L = (-1j*MM[s, 0] + MM[s, 1])/2/nk * W/RYD/light_speed/epsilon_r
+        M_L = (MM[s, 0]*1 + 1j * MM[s, 1])/2/nk * W/RYD/light_speed/epsilon_r*(1j)
         #Y1 += (abs(M + E)) ** 2 * np.exp(-alpha * (W - energyDif) ** 2)
 
         #Y1 += np.imag(E)* delta_lorentzian(W / RYD, energyDif / RYD, eta / RYD)
@@ -145,7 +145,7 @@ def calculate_epsR_epsL_eh(nk,MM, ME, excited_energy, nxct, W, eta, volume):
         #E = (ME[s, 0] - 1j * ME[s, 1]) / 2.17 / 2 ** 0.5
         E_R = (ME[s, 0] - 1j * ME[s, 1])
         #M = (1j * MM[s, 0] + MM[s, 1]) / 2 ** 0.5/(-2)/5
-        M_R = (1j*MM[s, 0] + MM[s, 1])/2/nk * W/RYD/light_speed/epsilon_r
+        M_R = (-MM[s, 0]*1 + 1j * MM[s, 1])/2/nk * W/RYD/light_speed/epsilon_r*(1j)
         #Y2 += (abs(M + E)) ** 2 * np.exp(-alpha * (W - energyDif) ** 2)
         Y1_eps2 += (np.abs(M_L + E_L)) ** 2 * delta_gauss(W / RYD, energyDif / RYD, eta / RYD) / (
                     energyDif / RYD) ** 2 / 2 / np.sqrt(2)
@@ -191,8 +191,8 @@ def calculate_epsR_epsL_eh(nk,MM, ME, excited_energy, nxct, W, eta, volume):
 
     Y1_eps2_0 *= pref
     Y2_eps2_0 *= pref
-    Y1_eps1_0 = pref*Y1_eps1+1
-    Y2_eps1_0 = pref*Y2_eps1+1
+    Y1_eps1_0 = pref*Y1_eps1_0+1
+    Y2_eps1_0 = pref*Y2_eps1_0+1
 
     alpha1 = W *np.sqrt(np.sqrt(Y1_eps1**2+Y1_eps2**2)-Y1_eps1)
     alpha2 = W * np.sqrt(np.sqrt(Y2_eps1 ** 2 + Y2_eps2 ** 2) - Y2_eps1)
@@ -217,24 +217,31 @@ def calculate_epsR_epsL_eh(nk,MM, ME, excited_energy, nxct, W, eta, volume):
     # Y1[1:] /= ((W[1:]/RYD) ** 2)
     # Y2[1:] /= ((W[1:]/RYD) ** 2)
 
+    deps_2_L = Y1_eps2 - Y1_eps2_0
+    deps_2_R = Y2_eps2 - Y2_eps2_0
+
+
     plt.figure()
-    plt.plot(W, Y, 'r', label = 'L-R')
-    plt.plot(W, YY1, 'g', label='YY1')
-    plt.plot(W, YY2, 'b', label='YY2')
+    #plt.plot(W, Y, 'r', label = 'L-R')
+
+    plt.plot(W, deps_2_L, 'r', label = 'deps_2_L')
+    plt.plot(W, deps_2_R, 'b', label='deps_2_R')
+    #plt.plot(W, YY1, 'g', label='YY1')
+    #plt.plot(W, YY2, 'b', label='YY2')
     #plt.plot(W, CD, 'r', label='CD')
     # plt.plot(W, alpha1_0, 'b', label='alpha1_0')
     # plt.plot(W, alpha2_0, 'g', label='alpha2_0')
     # plt.plot(W, alpha1, 'b', label='alpha1')
     # plt.plot(W, alpha2, 'g', label='alpha2')
 
-    # plt.plot(W, Y1_eps2, 'b', label = 'L_eps2')
-    # plt.plot(W, Y2_eps2, 'g', label = 'R_eps2')
-    # plt.plot(W, Y1_eps1, 'k', label = 'L_eps1')
-    # plt.plot(W, Y2_eps1, 'y', label = 'R_eps1')
+    #plt.plot(W, Y1_eps2, 'b', label = 'L_eps2')
+    #plt.plot(W, Y2_eps2, 'g', label = 'R_eps2')
+    #plt.plot(W, Y1_eps1, 'k', label = 'L_eps1')
+    #plt.plot(W, Y2_eps1, 'y', label = 'R_eps1')
     plt.legend()
     plt.show()
 
-    data = np.array([W, CD])
+    data = np.array([W, deps_2_L, deps_2_R])
     np.savetxt('CD.dat', data.T)
 
     return
@@ -249,7 +256,7 @@ def calculate_absorption_eh(nk,MM, ME, excited_energy, nxct, W, eta, volume):
     for s in range(nxct):
         energyDif = excited_energy[s]
         #E = (ME[s, 0] + 1j * ME[s, 1]) / 2.17 / 2 ** 0.5
-        E = (ME[s, 0])
+        E = (ME[s, 2])
         eps_2 += (abs(E)) ** 2 * delta_gauss(W/RYD, energyDif/RYD, eta/RYD)/np.sqrt(2)
         eps_1 += (abs(E)) ** 2 * delta_lorentzian(W/RYD, energyDif/RYD, eta/RYD)*(energyDif-W)/eta /(energyDif/RYD)**2/np.sqrt(2)
         #eps_1 += -(abs(E)) ** 2 * delta_lorentzian(-W / RYD, energyDif / RYD, eta / RYD) * (energyDif + W) / eta / RYD
@@ -330,7 +337,7 @@ def calculate_absorption_noeh(noeh_dipole, nk, nv, nc, energy_dft, W, eta, volum
     plt.figure()
     #plt.plot(W, Y, 'r')
     plt.plot(W, eps_2, 'b')
-    #plt.plot(W, eps_1, 'r')
+    plt.plot(W, eps_1, 'r')
     #plt.plot(W, Y2, 'g')
     plt.show()
 
@@ -344,6 +351,7 @@ def calculate_m(nk,MM, ME, excited_energy, nxct, W, eta, volume):
     RYD = 13.6057039763
     # Y = np.zeros_like(W)
     eps_2_x = np.zeros_like(W)
+    eps_2_y = np.zeros_like(W)
     eps_2_z = np.zeros_like(W)
     eps_2_x_z = np.zeros_like(W)
 
@@ -355,7 +363,9 @@ def calculate_m(nk,MM, ME, excited_energy, nxct, W, eta, volume):
         #M = (ME[s, 2])
         #M_z = (ME[s, 2])
         M_x = (MM[s, 0])
+        M_y = (MM[s, 1])
         eps_2_x += (abs(M_x)) ** 2 * delta_gauss(W / RYD, energyDif / RYD, eta / RYD) / np.sqrt(2)
+        eps_2_y += (abs(M_y)) ** 2 * delta_gauss(W / RYD, energyDif / RYD, eta / RYD) / np.sqrt(2)
         #eps_2_z += (abs(M_z)) ** 2 * delta_gauss(W / RYD, energyDif / RYD, eta / RYD) / np.sqrt(2)
         #eps_2_x_z += (abs(M_z)) *(abs(M_x)) * delta_gauss(W / RYD, energyDif / RYD, eta / RYD) / np.sqrt(2)
         # eps_1 += (abs(M)) ** 2 * delta_lorentzian(W / RYD, energyDif / RYD, eta / RYD) * (energyDif - W) / eta / (
@@ -371,11 +381,13 @@ def calculate_m(nk,MM, ME, excited_energy, nxct, W, eta, volume):
     # Y = Y1 - Y2
 
     eps_2_x[1:] /= ((W[1:] / RYD) ** 2)
+    eps_2_y[1:] /= ((W[1:] / RYD) ** 2)
     #eps_2_z[1:] /= ((W[1:] / RYD) ** 2)
     #eps_2_x_z[1:] /= ((W[1:] / RYD) ** 2)
     # eps_1[1:] /= ((W[1:] / RYD) ** 2)
     # Y *= pref
     eps_2_x *= pref
+    eps_2_y *= pref
     #eps_2_z *= pref
     #eps_2_x_z *= pref
 
@@ -392,6 +404,7 @@ def calculate_m(nk,MM, ME, excited_energy, nxct, W, eta, volume):
     plt.figure()
     # plt.plot(W, Y, 'r')
     plt.plot(W, eps_2_x, 'b', label='eps2_x')
+    plt.plot(W, eps_2_y, 'b', label='eps2_y')
     #plt.plot(W, eps_2_z, 'r', label='eps2_z')
     #plt.plot(W, eps_2_x_z, 'y', label='eps2_x_z')
     #plt.plot(W, eps_1, 'r', label='eps1')

@@ -55,13 +55,14 @@ nk = 16 * 16 * 2
 nc = 8
 nv = 8
 
-nc_for_r = 20
-nv_for_r = 20
+nc_for_r = 8
+nv_for_r = 8
+
 
 hovb = 560 # index of the highest occupied band
 nxct = 4000
 
-input_folder = './SMBA2PbI4_442_16162_4_4/'
+input_folder = './SMBA2PbI4_442_16162_8_8/'
 
 use_eqp = True
 
@@ -90,5 +91,61 @@ use_eqp = True
 # nxct = 400
 #
 # input_folder = './camphor/'
+#
+# use_eqp = True
+
+# nk = 16 * 16 * 2
+# nc = 8
+# nv = 8
+#
+# nc_for_r = 8
+# nv_for_r = 8
+#
+# hovb = 560 # index of the highest occupied band
+# nxct = 4000
+#
+# input_folder = './SMBA2PbI4_442_16162_8_8_shift/'
+#
+# use_eqp = True
+
+# nk = 24 * 24 * 2
+# nc = 8
+# nv = 8
+#
+# nc_for_r = 8
+# nv_for_r = 8
+#
+# hovb = 560 # index of the highest occupied band
+# nxct = 4000
+#
+# input_folder = './SMBA2PbI4_442_24242_8_8/'
+#
+# use_eqp = False
+
+# nk = 16 * 16 * 2
+# nc = 8
+# nv = 8
+#
+# nc_for_r = 20
+# nv_for_r = 20
+#
+# hovb = 560 # index of the highest occupied band
+# nxct = 4000
+#
+# input_folder = './SMBA2PbI4_442_16162_8_8_20_20/'
+#
+# use_eqp = False
+
+# nk = 16 * 16 * 2
+# nc = 8
+# nv = 8
+#
+# nc_for_r = 40
+# nv_for_r = 40
+#
+# hovb = 560 # index of the highest occupied band
+# nxct = 4000
+#
+# input_folder = './SMBA2PbI4_442_16162_8_8_40_40/'
 #
 # use_eqp = False

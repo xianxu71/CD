@@ -72,6 +72,7 @@ def read_noeh_dipole(nk, nv, nc , input_folder, nv_for_r, nc_for_r):
     file_2 = open(filename_2)
     file_3 = open(filename_3)
     header = file_1.readline()
+
     header = file_2.readline()
     header = file_3.readline()
     nb = nv_for_r+nc_for_r
