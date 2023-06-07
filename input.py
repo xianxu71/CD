@@ -1,151 +1,24 @@
-#
-# nk = 12 * 12 * 2
-# nc = 4
-# nv = 4
-#
-# nc_for_r = 4
-# nv_for_r = 4
-#
-# hovb = 560 # index of the highest occupied band
-# nxct = 4500
-#
-# input_folder = './'
-#
-# use_eqp = True
+import numpy as np
+nk = 16 * 16 * 2   #number of kpoints
+nc = 8    #number of conduction bands in eigenvectors.h5
+nv = 8    #number of valence bands in eigenvectors.h5
 
+nc_for_r = 8  #number of conduction bands for <\psi|r|\psi>
+nv_for_r = 8  #number of valence bands for <\psi|r|\psi>
 
-# nk = 12 * 12 * 2
-# nc = 4
-# nv = 4
-#
-# nc_for_r = 50
-# nv_for_r = 50
-#
-# hovb = 560 # index of the highest occupied band
-# nxct = 4000
-#
-# input_folder = './SMBA2PbI4/'
+nc_in_file = 8  #number of conduction bands in vmtxel_nl_b*.dat
+nv_in_file = 8  #number of valence bands in vmtxel_nl_b*.dat
 
-# nk = 8 * 8 * 8
-# nc = 3
-# nv = 3
-# hovb = 20 # index of the highest occupied band
-# nxct = 4000
-# nc_for_r = 3
-# nv_for_r = 3
-#
-# input_folder = './BTO/'
+hovb = 560      # index of the highest occupied band
+nxct = 4000     # number of exciton states
 
-#
-#
-# nk = 8 * 8 * 8
-# nc = 4
-# nv = 4
-#
-# nc_for_r = 50
-# nv_for_r = 4
-#
-# hovb = 4 # index of the highest occupied band
-# nxct = 1000
-#
-# input_folder = './Silicon/'
+input_folder = './SMBA2PbI4_442_16162_8_8/'  #address of input folder
 
+W = np.linspace(1.5, 2.7, 4000) #energy range
+eta = 0.02 #broadening coefficient
 
-nk = 16 * 16 * 2
-nc = 8
-nv = 8
+use_eqp = True #use eqp correction or not
 
-nc_for_r = 8
-nv_for_r = 8
+write_temp = False
+read_temp = True
 
-
-hovb = 560 # index of the highest occupied band
-nxct = 4000
-
-input_folder = './SMBA2PbI4_442_16162_8_8/'
-
-use_eqp = True
-
-# nk = 12 * 12 * 2
-# nc = 8
-# nv = 8
-#
-# nc_for_r = 20
-# nv_for_r = 20
-#
-# hovb = 560 # index of the highest occupied band
-# nxct = 4000
-#
-# input_folder = './SMBA2PbI4_442_12122_8_8/'
-#
-# use_eqp = True
-
-# nk = 1 * 1 * 1
-# nc = 20
-# nv = 20
-#
-# nc_for_r = 40
-# nv_for_r = 40
-#
-# hovb = 62 # index of the highest occupied band
-# nxct = 400
-#
-# input_folder = './camphor/'
-#
-# use_eqp = True
-
-# nk = 16 * 16 * 2
-# nc = 8
-# nv = 8
-#
-# nc_for_r = 8
-# nv_for_r = 8
-#
-# hovb = 560 # index of the highest occupied band
-# nxct = 4000
-#
-# input_folder = './SMBA2PbI4_442_16162_8_8_shift/'
-#
-# use_eqp = True
-
-# nk = 24 * 24 * 2
-# nc = 8
-# nv = 8
-#
-# nc_for_r = 8
-# nv_for_r = 8
-#
-# hovb = 560 # index of the highest occupied band
-# nxct = 4000
-#
-# input_folder = './SMBA2PbI4_442_24242_8_8/'
-#
-# use_eqp = False
-
-# nk = 16 * 16 * 2
-# nc = 8
-# nv = 8
-#
-# nc_for_r = 20
-# nv_for_r = 20
-#
-# hovb = 560 # index of the highest occupied band
-# nxct = 4000
-#
-# input_folder = './SMBA2PbI4_442_16162_8_8_20_20/'
-#
-# use_eqp = False
-
-# nk = 16 * 16 * 2
-# nc = 8
-# nv = 8
-#
-# nc_for_r = 40
-# nv_for_r = 40
-#
-# hovb = 560 # index of the highest occupied band
-# nxct = 4000
-#
-# input_folder = './SMBA2PbI4_442_16162_8_8_40_40/'
-#
-# use_eqp = False
