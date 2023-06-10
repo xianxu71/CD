@@ -5,7 +5,9 @@ import optical
 
 if __name__ == '__main__':
 
-    main_class = main_class.main_class(nk, nc, nv, nc_for_r, nv_for_r, nc_in_file, nv_in_file, hovb, nxct, input_folder,W, eta , use_eqp, write_temp, read_temp)
+    main_class = main_class.main_class(nk, nc, nv, nc_for_r, nv_for_r, nc_in_file, nv_in_file,
+                                       hovb, nxct, input_folder,W, eta , use_eqp, write_temp,
+                                       read_temp, energy_shift, eps1_correction, degeneracy_remover)
 
 
     #optical.calculate_epsR_epsL_noeh(main_class)

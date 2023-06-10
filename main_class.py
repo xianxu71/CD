@@ -7,7 +7,9 @@ class main_class:
     '''
     This is the main class where most parameters and data store
     '''
-    def __init__(self, nk, nc, nv, nc_for_r, nv_for_r, nc_in_file, nv_in_file, hovb, nxct, input_folder, W, eta , use_eqp, write_temp, read_temp):
+    def __init__(self, nk, nc, nv, nc_for_r, nv_for_r, nc_in_file, nv_in_file,
+                 hovb, nxct, input_folder, W, eta , use_eqp, write_temp, read_temp,
+                 energy_shift, eps1_correction, degeneracy_remover):
         """
         intialize main_class from input.py and all the input files
         """
@@ -26,6 +28,10 @@ class main_class:
         self.use_eqp = use_eqp #use eqp correction or not
         self.write_temp = write_temp
         self.read_temp = read_temp
+        self.energy_shift = energy_shift
+        self.eps1_correction = eps1_correction
+        self.degeneracy_remover = degeneracy_remover
+
         self.reader = reader.reader(self) #read all the data from input file
         self.electromagnetic = electromagnetic.electromagnetic(self) #calculate all the electromagnetic matrices
 

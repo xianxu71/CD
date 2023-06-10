@@ -3,6 +3,8 @@ from math_function import *
 import matplotlib.pyplot as plt
 
 def calculate_epsR_epsL_noeh(main_class):
+    energy_shift=main_class.energy_shift
+    eps1_correction=main_class.eps1_correction
     volume = main_class.volume
     nk = main_class.nk
     W = main_class.W
@@ -45,7 +47,7 @@ def calculate_epsR_epsL_noeh(main_class):
     for ik in range(nk):
         for iv in range(nv):
             for ic in range(nc):
-                energyDif = energy_dft[ik, ic + nv] - energy_dft[ik, iv]
+                energyDif = energy_dft[ik, ic + nv] - energy_dft[ik, iv]+energy_shift/RYD
                 if use_eqp:
                     energyDif2 = energyDif + eqp_corr[ik, nv + ic] / RYD - eqp_corr[ik, iv] / RYD
                 else:
@@ -82,13 +84,13 @@ def calculate_epsR_epsL_noeh(main_class):
     Y *= pref
     Y1_eps2 *= pref
     Y2_eps2 *= pref
-    Y1_eps1 = pref * Y1_eps1 + 1
-    Y2_eps1 = pref * Y2_eps1 + 1
+    Y1_eps1 = pref * Y1_eps1 + 1 +eps1_correction
+    Y2_eps1 = pref * Y2_eps1 + 1 +eps1_correction
 
     Y1_eps2_0 *= pref
     Y2_eps2_0 *= pref
-    Y1_eps1_0 = pref * Y1_eps1_0 + 1
-    Y2_eps1_0 = pref * Y2_eps1_0 + 1
+    Y1_eps1_0 = pref * Y1_eps1_0 + 1 +eps1_correction
+    Y2_eps1_0 = pref * Y2_eps1_0 + 1 +eps1_correction
 
     alpha1 = W * np.sqrt(np.sqrt(Y1_eps1 ** 2 + Y1_eps2 ** 2) - Y1_eps1)
     alpha2 = W * np.sqrt(np.sqrt(Y2_eps1 ** 2 + Y2_eps2 ** 2) - Y2_eps1)
@@ -121,12 +123,14 @@ def calculate_epsR_epsL_noeh(main_class):
     plt.show()
 
     data = np.array([W, CD])
-    np.savetxt('CD.dat', data.T)
+    np.savetxt(main_class.input_folder+'CD0.dat', data.T)
 
     return
 
 def calculate_epsR_epsL_eh(main_class):
     #nk,MM, ME, excited_energy, nxct, W, eta, volume
+    energy_shift=main_class.energy_shift
+    eps1_correction=main_class.eps1_correction
 
     nk = main_class.nk
     MM = main_class.MM
@@ -139,7 +143,6 @@ def calculate_epsR_epsL_eh(main_class):
 
     pref = 16.0 * np.pi**2/volume/nk
     RYD = 13.6057039763
-    eps1_shift = 0
     light_speed = 137
     epsilon_r = 1
     Y = np.zeros_like(W)
@@ -160,7 +163,7 @@ def calculate_epsR_epsL_eh(main_class):
     alpha1_0 = np.zeros_like(W)
     alpha2_0 = np.zeros_like(W)
     for s in range(nxct):
-        energyDif = excited_energy[s]
+        energyDif = excited_energy[s]+energy_shift
         #E = (ME[s, 0] + 1j * ME[s, 1]) / 2.17 / 2 ** 0.5
         E_L = (ME[s, 0] + 1j * ME[s, 1])
         #M = (-1j * MM[s, 0] + MM[s, 1]) / 2 ** 0.5/(-2)/5
@@ -213,13 +216,13 @@ def calculate_epsR_epsL_eh(main_class):
     YY2 *= pref
     Y1_eps2 *= pref
     Y2_eps2 *= pref
-    Y1_eps1 = pref*Y1_eps1+1 + eps1_shift
-    Y2_eps1 = pref*Y2_eps1+1 + eps1_shift
+    Y1_eps1 = pref*Y1_eps1+1 + eps1_correction
+    Y2_eps1 = pref*Y2_eps1+1 + eps1_correction
 
     Y1_eps2_0 *= pref
     Y2_eps2_0 *= pref
-    Y1_eps1_0 = pref*Y1_eps1_0+1 + eps1_shift
-    Y2_eps1_0 = pref*Y2_eps1_0+1 + eps1_shift
+    Y1_eps1_0 = pref*Y1_eps1_0+1 + eps1_correction
+    Y2_eps1_0 = pref*Y2_eps1_0+1 + eps1_correction
 
     alpha1 = W *np.sqrt(np.sqrt(Y1_eps1**2+Y1_eps2**2)-Y1_eps1)
     alpha2 = W * np.sqrt(np.sqrt(Y2_eps1 ** 2 + Y2_eps2 ** 2) - Y2_eps1)
@@ -232,8 +235,10 @@ def calculate_epsR_epsL_eh(main_class):
     R1_0 = calculate_reflectivity(Y1_eps1_0,Y1_eps2_0)
     R2_0 = calculate_reflectivity(Y2_eps1_0, Y2_eps2_0)
     #
-    dR1 = (R1-R1_0)#/R1
-    dR2 = (R2-R2_0)#/R2
+    #dR1 = (R1-R1_0)/R1
+    #dR2 = (R2-R2_0)/R2
+    #dR1 = (R1-R2)/R1
+    #dR2 = (R2-R1)/R2
 
 
 
@@ -294,7 +299,7 @@ def calculate_epsR_epsL_eh(main_class):
 
     #data = np.array([W, deps_2_L, deps_2_R])
     data = np.array([W, deps_2_L-deps_1_R])
-    np.savetxt('CD.dat', data.T)
+    np.savetxt(main_class.input_folder+'CD.dat', data.T)
 
     return
 
@@ -307,6 +312,8 @@ def calculate_absorption_eh(main_class):
     W = main_class.W
     eta = main_class.eta
     volume = main_class.volume
+    energy_shift=main_class.energy_shift
+    eps1_correction=main_class.eps1_correction
 
 
     pref = 16.0 * np.pi**2/volume/nk
@@ -316,7 +323,7 @@ def calculate_absorption_eh(main_class):
     eps_1 = np.zeros_like(W)
     # Y2 = np.zeros_like(W)
     for s in range(nxct):
-        energyDif = excited_energy[s]
+        energyDif = excited_energy[s]+energy_shift
         #E = (ME[s, 0] + 1j * ME[s, 1]) / 2.17 / 2 ** 0.5
         E = (ME[s, 0])
         eps_2 += (abs(E)) ** 2 * delta_gauss(W/RYD, energyDif/RYD, eta/RYD)/np.sqrt(2)
@@ -335,7 +342,7 @@ def calculate_absorption_eh(main_class):
     #eps_1[1:] /= ((W[1:] / RYD) ** 2)
     # Y *= pref
     eps_2 *= pref
-    eps_1 = 1 + pref*eps_1
+    eps_1 = 1 + pref*eps_1+eps1_correction
     # Y2 *= pref
 
     # Y[1:] /= (W[1:] ** 2 * (1.6E-19) ** 2)
@@ -353,13 +360,17 @@ def calculate_absorption_eh(main_class):
     plt.legend()
     plt.show()
 
-    data = np.array([W, eps_2, eps_1])
-    np.savetxt('absp.dat', data.T)
+    data = np.array([W, eps_1, eps_2])
+    np.savetxt(main_class.input_folder+'absp.dat', data.T)
 
     return
 
 def calculate_absorption_noeh(main_class):
     # noeh_dipole, nk, nv, nc, energy_dft, W, eta, volume, use_eqp=False, eqp_corr = None
+    RYD = 13.6057039763
+    energy_shift=main_class.energy_shift
+    eps1_correction=main_class.eps1_correction
+
     noeh_dipole = main_class.noeh_dipole
     nk = main_class.nk
     nv = main_class.nv
@@ -372,7 +383,7 @@ def calculate_absorption_noeh(main_class):
     eqp_corr = main_class.eqp_corr
 
     pref = 16.0 * np.pi**2/volume/nk
-    RYD = 13.6057039763
+
     #Y = np.zeros_like(W)
     eps_2 = np.zeros_like(W)
     eps_1 = np.zeros_like(W)
@@ -381,7 +392,7 @@ def calculate_absorption_noeh(main_class):
     for ik in range(nk):
         for iv in range(nv):
             for ic in range(nc):
-                energyDif = energy_dft[ik,ic+nv]-energy_dft[ik,iv]
+                energyDif = energy_dft[ik,ic+nv]-energy_dft[ik,iv]+energy_shift/RYD
                 if use_eqp:
                     energyDif2 =energyDif + eqp_corr[ik,nv+ic]/RYD-eqp_corr[ik,iv]/RYD
                 else:
@@ -398,7 +409,7 @@ def calculate_absorption_noeh(main_class):
 
     #Y *= pref
     eps_2 *= pref
-    eps_1 = pref*eps_1 + 1
+    eps_1 = pref*eps_1 + 1 + eps1_correction
     #Y2 *= pref
 
     # Y[1:] /= (W[1:] ** 2 * (1.6E-19) ** 2)
@@ -416,12 +427,14 @@ def calculate_absorption_noeh(main_class):
     plt.show()
 
     data = np.array([W, eps_2, eps_1])
-    np.savetxt('absp.dat', data.T)
+    np.savetxt(main_class.input_folder+'absp0.dat', data.T)
 
     return
 
 def calculate_m(main_class):
     #nk,MM, ME, excited_energy, nxct, W, eta, volume
+    energy_shift=main_class.energy_shift
+    eps1_correction=main_class.eps1_correction
 
     nk = main_class.nk
     MM = main_class.MM
@@ -445,7 +458,7 @@ def calculate_m(main_class):
     eps_1 = np.zeros_like(W)
     # Y2 = np.zeros_like(W)
     for s in range(nxct):
-        energyDif = excited_energy[s]
+        energyDif = excited_energy[s]+energy_shift
         # E = (ME[s, 0] + 1j * ME[s, 1]) / 2.17 / 2 ** 0.5
         #M = (ME[s, 2])
         #M_z = (ME[s, 2])

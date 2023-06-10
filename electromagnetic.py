@@ -65,7 +65,7 @@ class electromagnetic:
         energy_diff = (Ekv - Ekm)  # e_diff(k,v,m) = [E(k,v) - E(k,m)]^-1
         with np.errstate(divide='ignore'):
             energy_diff_inverse = 1 / energy_diff
-            energy_diff_inverse[abs(energy_diff) < 0.002] = 0
+            energy_diff_inverse[abs(energy_diff) < main_class.degeneracy_remover] = 0
 
         totx = np.einsum('kvm,kvm,kmc-> kvc', datay[:, 0:main_class.nv_for_r, :], energy_diff_inverse,
                          dataz[:, :, main_class.nv_for_r:main_class.nv_for_r + main_class.nc_for_r]) - \
