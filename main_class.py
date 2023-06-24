@@ -9,7 +9,7 @@ class main_class:
     '''
     def __init__(self, nk, nc, nv, nc_for_r, nv_for_r, nc_in_file, nv_in_file,
                  hovb, nxct, input_folder, W, eta , use_eqp, write_temp, read_temp,
-                 energy_shift, eps1_correction, degeneracy_remover):
+                 energy_shift, eps1_correction, degeneracy_remover, a):
         """
         intialize main_class from input.py and all the input files
         """
@@ -31,6 +31,7 @@ class main_class:
         self.energy_shift = energy_shift
         self.eps1_correction = eps1_correction
         self.degeneracy_remover = degeneracy_remover
+        self.a = a
 
         self.reader = reader.reader(self) #read all the data from input file
         self.electromagnetic = electromagnetic.electromagnetic(self) #calculate all the electromagnetic matrices

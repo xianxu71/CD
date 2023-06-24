@@ -1,31 +1,34 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
-a = np.array([[ 8.425800753,   0.000000000,  -0.131321631],
-              [ 0.000000000,   7.517499108,   0.000000000],
-              [ -1.532446824,   0.000000000,  18.676624778]])
+x2 = 6.48+1.47j
+x3 = 2.03+0.47j
 
-V = np.inner(np.cross(a[0],a[1]),a[2])
+y2 = 0.44-2.03j
+y3 = -1.24+6.37j
 
-b1 = 2*np.pi/V * (np.cross(a[1],a[2]))
-b2 = 2*np.pi/V * (np.cross(a[2],a[0]))
-b3 = 2*np.pi/V * (np.cross(a[0],a[1]))
+L2 = (x2+y2*1j)/np.sqrt(2)
+L3 = (x3+y3*1j)/np.sqrt(2)
 
-b1 = b1/np.sqrt(np.inner(b1,b1))
-b2 = b2/np.sqrt(np.inner(b2,b2))
-b3 = b3/np.sqrt(np.inner(b3,b3))
+R2 = (x2-y2*1j)/np.sqrt(2)
+R3 = (x3-y3*1j)/np.sqrt(2)
 
-v1 = np.array([1,2,3,4])
-v2 = np.array([5,6,7,8])
-v3 = np.array([9,10,11,12])
+plt.figure()
 
-vx = b1[0]*v1+b2[0]*v2+b3[0]*v3
-vy = b1[1]*v1+b2[1]*v2+b3[1]*v3
-vz = b1[2]*v1+b2[2]*v2+b3[2]*v3
+# plt.quiver(0,0,np.real(x2),np.imag(x2),color='k',units='xy',label='x',scale = 1)
+# plt.quiver(0,0,np.real(y2),np.imag(y2),color='r',units='xy',label='y',scale = 1)
+# plt.quiver(0,0,np.real(L2),np.imag(L2),color='g',units='xy',label='L',scale = 1)
+# plt.quiver(0,0,np.real(R2),np.imag(R2),color='b',units='xy',label='R',scale = 1)
 
-print(b1)
-print(b2)
-print(b3)
+plt.quiver(0,0,np.real(x3),np.imag(x3),color='k',units='xy',label='x',scale = 1)
+plt.quiver(0,0,np.real(y3),np.imag(y3),color='r',units='xy',label='y',scale = 1)
+plt.quiver(0,0,np.real(L3),np.imag(L3),color='g',units='xy',label='L',scale = 1)
+plt.quiver(0,0,np.real(R3),np.imag(R3),color='b',units='xy',label='R',scale = 1)
 
-print(vx)
-print(vy)
-print(vz)
+plt.axes().set_aspect('equal')
+plt.xlim(-7,7)
+plt.ylim(-7,7)
+plt.legend()
+
+
+plt.show()

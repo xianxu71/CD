@@ -14,7 +14,8 @@ def calculate_epsR_epsL_noeh(main_class):
     nc = main_class.nc
     energy_dft = main_class.energy_dft
     use_eqp = main_class.use_eqp
-    eqp_corr= main_class.eqp_corr
+    if use_eqp:
+        eqp_corr= main_class.eqp_corr
     eta = main_class.eta
 
 
@@ -42,11 +43,17 @@ def calculate_epsR_epsL_noeh(main_class):
     M1 = (1 * L_kvc[:, :, :, 0] + 1j * L_kvc[:, :, :, 1]) / 2 / nk * (1j)
 
     E2 = (E_kvc[:, :, :, 0] - 1j * E_kvc[:, :, :, 1])
+
+    dE = np.abs(E1)**2 - np.abs(E2)**2
+
     # M = (-1j * MM[s, 0] + MM[s, 1]) / 2 ** 0.5/(-2)/5
+    E1_2 = np.abs(E1)**2
+    E2_2 = np.abs(E2)**2
+    dE_2 = E1_2 - E2_2
     M2 = (- L_kvc[:, :, :, 0] + 1j * L_kvc[:, :, :, 1]) / 2 / nk * (1j)
     for ik in range(nk):
-        for iv in range(nv):
-            for ic in range(nc):
+        for iv in range(nv): #range(nv)
+            for ic in range(nc): #range(nc)
                 energyDif = energy_dft[ik, ic + nv] - energy_dft[ik, iv]+energy_shift/RYD
                 if use_eqp:
                     energyDif2 = energyDif + eqp_corr[ik, nv + ic] / RYD - eqp_corr[ik, iv] / RYD
@@ -108,7 +115,10 @@ def calculate_epsR_epsL_noeh(main_class):
     # Y2[1:] /= ((W[1:]/RYD) ** 2)
 
     plt.figure()
-    plt.plot(W, Y, 'r', label='L-R')
+    plt.plot(W, Y1_eps2_0, 'b', label='L')
+    plt.plot(W, Y2_eps2_0, 'g', label='R')
+    plt.plot(W, Y2_eps2_0-Y1_eps2_0, 'r', label='R-L')
+
     # plt.plot(W, CD, 'r', label='CD')
     # plt.plot(W, alpha1_0, 'b', label='alpha1_0')
     # plt.plot(W, alpha2_0, 'g', label='alpha2_0')
@@ -122,7 +132,7 @@ def calculate_epsR_epsL_noeh(main_class):
     plt.legend()
     plt.show()
 
-    data = np.array([W, CD])
+    data = np.array([W, Y1_eps2_0,Y1_eps2_0])
     np.savetxt(main_class.input_folder+'CD0.dat', data.T)
 
     return
@@ -165,7 +175,8 @@ def calculate_epsR_epsL_eh(main_class):
     for s in range(nxct):
         energyDif = excited_energy[s]+energy_shift
         #E = (ME[s, 0] + 1j * ME[s, 1]) / 2.17 / 2 ** 0.5
-        E_L = (ME[s, 0] + 1j * ME[s, 1])
+        #E_L = (ME[s, 0] + 1j * ME[s, 1])
+        E_L = (ME[s, 0]+1j * ME[s, 1])
         #M = (-1j * MM[s, 0] + MM[s, 1]) / 2 ** 0.5/(-2)/5
         M_L = (MM[s, 0]*1 + 1j * MM[s, 1])/2/nk * W/RYD/light_speed/epsilon_r*(1j)
         #Y1 += (abs(M + E)) ** 2 * np.exp(-alpha * (W - energyDif) ** 2)
@@ -173,7 +184,8 @@ def calculate_epsR_epsL_eh(main_class):
         #Y1 += np.imag(E)* delta_lorentzian(W / RYD, energyDif / RYD, eta / RYD)
 
         #E = (ME[s, 0] - 1j * ME[s, 1]) / 2.17 / 2 ** 0.5
-        E_R = (ME[s, 0] - 1j * ME[s, 1])
+        #E_R = (ME[s, 0] - 1j * ME[s, 1])
+        E_R = (ME[s, 0]- 1j * ME[s, 1])
         #M = (1j * MM[s, 0] + MM[s, 1]) / 2 ** 0.5/(-2)/5
         M_R = (-MM[s, 0]*1 + 1j * MM[s, 1])/2/nk * W/RYD/light_speed/epsilon_r*(1j)
         #Y2 += (abs(M + E)) ** 2 * np.exp(-alpha * (W - energyDif) ** 2)
@@ -278,28 +290,32 @@ def calculate_epsR_epsL_eh(main_class):
 
     #plt.plot(W, Y, 'r', label = 'L-R')
 
-    plt.plot(W, deps_2_L, 'r', label = 'deps_2_L')
-    plt.plot(W, deps_2_R, 'b', label='deps_2_R')
+    # plt.plot(W, deps_1_L, 'r', label = 'deps_2_L')
+    # plt.plot(W, deps_1_R, 'b', label='deps_2_R')
+    plt.plot(W, Y2_eps2_0-Y1_eps2_0, 'r', label = 'R-L')
     # plt.plot(W, deps_1_L, 'r', label = 'deps_1_L')
     # plt.plot(W, deps_1_R, 'b', label = 'deps_1_R')
-    # plt.plot(W, Y1_eps2_0 , 'g', label='Y1_eps2_0 ')
-    # plt.plot(W, Y2_eps2_0 , 'b', label='Y2_eps2_0 ')
+    #plt.plot(W, Y1_eps2_0 , 'g', label='Y1_eps2_0 ')
+    #plt.plot(W, Y2_eps2_0 , 'b', label='Y2_eps2_0 ')
     # plt.plot(W, CD, 'r', label='CD')
     # plt.plot(W, alpha1_0, 'b', label='alpha1_0')
     # plt.plot(W, alpha2_0, 'g', label='alpha2_0')
     # plt.plot(W, alpha1, 'b', label='alpha1')
     # plt.plot(W, alpha2, 'g', label='alpha2')
 
-    #plt.plot(W, Y1_eps2, 'b', label = 'L_eps2')
-    #plt.plot(W, Y2_eps2, 'g', label = 'R_eps2')
+    #plt.plot(W, Y1_eps2_0, 'b', label = 'L_eps1')
+    #plt.plot(W, Y2_eps2_0, 'g', label = 'R_eps1')
     #plt.plot(W, Y1_eps1, 'k', label = 'L_eps1')
     #plt.plot(W, Y2_eps1, 'y', label = 'R_eps1')
     plt.legend()
     plt.show()
 
     #data = np.array([W, deps_2_L, deps_2_R])
-    data = np.array([W, deps_2_L-deps_1_R])
+    data = np.array([W, deps_2_L-deps_2_R])
+    data2 = np.array([W,Y1_eps2_0,Y2_eps2_0])
     np.savetxt(main_class.input_folder+'CD.dat', data.T)
+    np.savetxt(main_class.input_folder+'eps1_LR.dat', data2.T)
+
 
     return
 

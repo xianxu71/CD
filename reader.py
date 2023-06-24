@@ -1,6 +1,7 @@
 import numpy as np
 from mpi import MPI, comm, size, rank
 import h5py as h5
+import math_function
 
 class reader:
     """
@@ -18,8 +19,9 @@ class reader:
         main_class.avck = self.avck_reader(main_class) #read Acvk from eigenvectors.h5
         main_class.excited_energy = self.read_excited_energy(main_class) #read exciton energy
         main_class.volume = self.read_volume(main_class)
+        #main_class.eqp_corr = self.read_eqp(main_class)
         if main_class.use_eqp:
-            main_class.eqp = self.read_eqp(main_class) #read quasiparticle energy correction from eqp.dat
+            main_class.eqp_corr = self.read_eqp(main_class) #read quasiparticle energy correction from eqp.dat
     def read_volume(self,main_class):
         input_file = main_class.input_folder + 'eigenvectors.h5'
         f = h5.File(input_file, 'r')
@@ -115,6 +117,12 @@ class reader:
                     noeh_dipole_full[ik, ib1, ib2, 0] = v1
                     noeh_dipole_full[ik, ib1, ib2, 1] = v2
                     noeh_dipole_full[ik, ib1, ib2, 2] = v3
+        noeh_dipole_full_temp = np.zeros([main_class.nk, nb, nb, 3], dtype=np.complex)
+        noeh_dipole_full_temp[:,:,:,0], noeh_dipole_full_temp[:,:,:,1], noeh_dipole_full_temp[:,:,:,2] = math_function.b123_to_xyz(
+            main_class.a, noeh_dipole_full[:,:,:,0], noeh_dipole_full[:,:,:,1], noeh_dipole_full[:,:,:,2]
+        )
+        noeh_dipole_full = noeh_dipole_full_temp * 1.00
+
         noeh_dipole_full = noeh_dipole_full[:, main_class.nv_in_file - main_class.nv_for_r:main_class.nv_in_file + main_class.nc_for_r,
                            main_class.nv_in_file - main_class.nv_for_r:main_class.nv_in_file + main_class.nc_for_r, :]
         noeh_dipole_partial = noeh_dipole_full[:, main_class.nv_for_r - main_class.nv:main_class.nv_for_r + main_class.nc, main_class.nv_for_r - main_class.nv:main_class.nv_for_r + main_class.nc, :]

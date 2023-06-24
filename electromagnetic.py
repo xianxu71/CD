@@ -27,7 +27,7 @@ class electromagnetic:
     def calculate_MM_ME(self,main_class):
         idx = list(range(main_class.nv - 1, -1, -1))
 
-        inds = np.ix_(range(main_class.nk), idx, range(main_class.nv), range(3))
+        inds = np.ix_(range(main_class.nk), idx, range(main_class.nc), range(3))
         E_temp = main_class.E_kvc[inds]
         L_temp = main_class.L_kvc[inds]
 
