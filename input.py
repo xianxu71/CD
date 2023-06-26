@@ -106,7 +106,7 @@ import numpy as np
 #               [ 0,   1,   0],
 #               [ 0,   0,  1]])
 
-nk = 30 * 30 * 1
+nk = 40 * 40 * 1
 nc = 6
 nv = 4
 
@@ -119,7 +119,7 @@ nv_in_file = 4
 hovb = 4 # index of the highest occupied band
 nxct = 800
 
-input_folder = './bn/'
+input_folder = './bn_40401/'
 
 
 #W = np.linspace(3.0, 3.4, 4000) #energy range
@@ -133,8 +133,17 @@ read_temp = False
 
 energy_shift = 0
 eps1_correction = 0
-degeneracy_remover = 0.000001
+degeneracy_remover = 0.0000000001
+spinor = 1
 
-a = np.array([[0.5,       -0.866025404,       0],
-              [0.5,       0.866025404,       0],
-              [0,       0,       4]])
+# a = np.array([[0.5,       -0.866025404,       0],
+#               [0.5,       0.866025404,       0],
+#               [0,       0,       4]])
+
+# a = np.array([[4.41813,       0,       0],
+#                [-2.209065,       3.8262131617,       0],
+#                [0,       0,       4]])
+
+a = np.array([[1,       0,       0],
+               [0,       1,       0],
+               [0,       0,       1]])

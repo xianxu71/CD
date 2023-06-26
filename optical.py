@@ -332,7 +332,7 @@ def calculate_absorption_eh(main_class):
     eps1_correction=main_class.eps1_correction
 
 
-    pref = 16.0 * np.pi**2/volume/nk
+    pref = 16.0 * np.pi**2/volume/nk/main_class.spinor
     RYD = 13.6057039763
     # Y = np.zeros_like(W)
     eps_2 = np.zeros_like(W)
@@ -342,8 +342,8 @@ def calculate_absorption_eh(main_class):
         energyDif = excited_energy[s]+energy_shift
         #E = (ME[s, 0] + 1j * ME[s, 1]) / 2.17 / 2 ** 0.5
         E = (ME[s, 0])
-        eps_2 += (abs(E)) ** 2 * delta_gauss(W/RYD, energyDif/RYD, eta/RYD)/np.sqrt(2)
-        eps_1 += (abs(E)) ** 2 * delta_lorentzian(W/RYD, energyDif/RYD, eta/RYD)*(energyDif-W)/eta /(energyDif/RYD)**2/np.sqrt(2)
+        eps_2 += (abs(E)) ** 2 * delta_gauss(W/RYD, energyDif/RYD, eta/RYD)/(energyDif/RYD)**2
+        eps_1 += (abs(E)) ** 2 * delta_lorentzian(W/RYD, energyDif/RYD, eta/RYD)*(energyDif-W)/eta /(energyDif/RYD)**2
         #eps_1 += -(abs(E)) ** 2 * delta_lorentzian(-W / RYD, energyDif / RYD, eta / RYD) * (energyDif + W) / eta / RYD
         #Y1 += np.imag(E)* delta_lorentzian(W / RYD, energyDif / RYD, eta / RYD)
 
@@ -354,7 +354,7 @@ def calculate_absorption_eh(main_class):
         #Y2 += np.imag(E) ** 2 * delta_lorentzian(W / RYD, energyDif / RYD, eta / RYD)
     # Y = Y1 - Y2
 
-    eps_2[1:] /= ((W[1:] / RYD) ** 2)
+    #eps_2[1:] /= ((W[1:] / RYD) ** 2)
     #eps_1[1:] /= ((W[1:] / RYD) ** 2)
     # Y *= pref
     eps_2 *= pref
@@ -396,9 +396,10 @@ def calculate_absorption_noeh(main_class):
     eta = main_class.eta
     volume = main_class.volume
     use_eqp = main_class.use_eqp
-    eqp_corr = main_class.eqp_corr
+    if use_eqp:
+        eqp_corr = main_class.eqp_corr
 
-    pref = 16.0 * np.pi**2/volume/nk
+    pref = 16.0 * np.pi**2/volume/nk/main_class.spinor
 
     #Y = np.zeros_like(W)
     eps_2 = np.zeros_like(W)
@@ -414,9 +415,9 @@ def calculate_absorption_noeh(main_class):
                 else:
                     energyDif2 =energyDif
 
-                eps_2 += np.abs(noeh_dipole[ik,iv,ic+nv,0])**2 * (delta_gauss(W/RYD, energyDif2, eta/RYD))/(energyDif**2)/2
+                eps_2 += np.abs(noeh_dipole[ik,iv,ic+nv,0])**2 * (delta_gauss(W/RYD, energyDif2, eta/RYD))/(energyDif**2)
                 eps_1 += np.abs(noeh_dipole[ik, iv, ic + nv, 0]) ** 2 * (
-                    delta_lorentzian(W / RYD, energyDif2, eta / RYD)) / (energyDif ** 2)*(energyDif2-W/RYD)/eta * RYD/2
+                    delta_lorentzian(W / RYD, energyDif2, eta / RYD)) / (energyDif ** 2)*(energyDif2-W/RYD)/eta * RYD
                 #Y2 += np.abs(noeh_dipole[ik, iv, ic + nv, 1]) ** 2 * (delta_lorentzian(W / RYD, energyDif,
                 #                                                                      eta / RYD)-delta_lorentzian(-W/RYD, energyDif, eta/RYD))/(energyDif**2)
 

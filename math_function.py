@@ -27,8 +27,12 @@ def b123_to_xyz(a,v1,v2,v3):
     b2 = b2 / np.sqrt(np.inner(b2, b2))
     b3 = b3 / np.sqrt(np.inner(b3, b3))
 
-    vx = b1[0] * v1 + b2[0] * v2 + b3[0] * v3
-    vy = b1[1] * v1 + b2[1] * v2 + b3[1] * v3
-    vz = b1[2] * v1 + b2[2] * v2 + b3[2] * v3
+    T = np.array([b1,b2,b3])
+    invT = np.linalg.inv(T)
+
+    vx = invT[0][0]*v1+invT[0][1]*v2+invT[0][2]*v3
+    vy = invT[1][0]*v1+invT[1][1]*v2+invT[1][2]*v3
+    vz = invT[2][0]*v1+invT[2][1]*v2+invT[2][2]*v3
+
 
     return vx, vy, vz
