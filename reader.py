@@ -8,14 +8,18 @@ class reader:
     read data from input files
     """
     def __init__(self, main_class):
+        main_class.energy_dft_full, main_class.energy_dft = self.read_dft_energy(main_class)
         if main_class.read_temp:
             h5_file_r = h5.File(main_class.input_folder+'temp.h5', 'r')
             main_class.noeh_dipole_full = np.array(h5_file_r.get('noeh_dipole_full'))
             main_class.noeh_dipole = np.array(h5_file_r.get('noeh_dipole'))
+            main_class.noeh_dipole_full_not_over_dE = np.array(h5_file_r.get('noeh_dipole_full_not_over_dE'))
+            main_class.noeh_dipole_not_over_dE = np.array(h5_file_r.get('noeh_dipole_not_over_dE'))
             h5_file_r.close()
         else:
-            main_class.noeh_dipole_full, main_class.noeh_dipole = self.read_noeh_dipole(main_class)  #read dipole from vmtxel
-        main_class.energy_dft_full, main_class.energy_dft = self.read_dft_energy(main_class) #read dft energy for each band
+            main_class.noeh_dipole_full, main_class.noeh_dipole, main_class.noeh_dipole_full_not_over_dE, main_class.noeh_dipole_not_over_dE = \
+                self.read_noeh_dipole(main_class)  #read dipole from vmtxel
+         #read dft energy for each band
         main_class.avck = self.avck_reader(main_class) #read Acvk from eigenvectors.h5
         main_class.excited_energy = self.read_excited_energy(main_class) #read exciton energy
         main_class.volume = self.read_volume(main_class)
@@ -69,6 +73,7 @@ class reader:
 
 
     def read_noeh_dipole(self, main_class):
+        RYD = 13.6057039763
         filename_1 = main_class.input_folder + "vmtxel_nl_b1.dat" #file names
         filename_2 = main_class.input_folder + "vmtxel_nl_b2.dat"
         filename_3 = main_class.input_folder + "vmtxel_nl_b3.dat"
@@ -90,6 +95,7 @@ class reader:
         nb = main_class.nv_in_file + main_class.nc_in_file
         nb2 = main_class.nv + main_class.nc
         noeh_dipole_full = np.zeros([main_class.nk, nb, nb, 3], dtype=np.complex)
+        noeh_dipole_full_not_over_dE = np.zeros([main_class.nk, nb, nb, 3], dtype=np.complex)
         noeh_dipole_partial = np.zeros([main_class.nk, nb2, nb2, 3], dtype=np.complex)
         for ik in range(0, main_class.nk):
             for ib1 in range(0, nb):
@@ -113,21 +119,44 @@ class reader:
                     v1 = v1_real + 1j * v1_imag
                     v2 = v2_real + 1j * v2_imag
                     v3 = v3_real + 1j * v3_imag
+                    ediff = (main_class.energy_dft_full[ik, ib1] - main_class.energy_dft_full[ik, ib2])
+                    if np.abs(main_class.energy_dft_full[ik, ib1] - main_class.energy_dft_full[ik, ib2])<0.0000000000001:
+                        ediff_inv = 0
+                    else:
+                        ediff_inv = 1/ediff
+                    noeh_dipole_full_not_over_dE [ik, ib1, ib2, 0] = v1
+                    noeh_dipole_full_not_over_dE[ik, ib1, ib2, 1] = v2
+                    noeh_dipole_full_not_over_dE[ik, ib1, ib2, 2] = v3
 
-                    noeh_dipole_full[ik, ib1, ib2, 0] = v1
-                    noeh_dipole_full[ik, ib1, ib2, 1] = v2
-                    noeh_dipole_full[ik, ib1, ib2, 2] = v3
+                    noeh_dipole_full[ik, ib1, ib2, 0] = v1*ediff_inv
+                    noeh_dipole_full[ik, ib1, ib2, 1] = v2*ediff_inv
+                    noeh_dipole_full[ik, ib1, ib2, 2] = v3*ediff_inv
         noeh_dipole_full_temp = np.zeros([main_class.nk, nb, nb, 3], dtype=np.complex)
         noeh_dipole_full_temp[:,:,:,0], noeh_dipole_full_temp[:,:,:,1], noeh_dipole_full_temp[:,:,:,2] = math_function.b123_to_xyz(
             main_class.a, noeh_dipole_full[:,:,:,0], noeh_dipole_full[:,:,:,1], noeh_dipole_full[:,:,:,2]
         )
+        noeh_dipole_full_not_over_dE_temp = np.zeros([main_class.nk, nb, nb, 3], dtype=np.complex)
+        noeh_dipole_full_not_over_dE_temp[:, :, :, 0], noeh_dipole_full_not_over_dE_temp[:, :, :, 1], noeh_dipole_full_not_over_dE_temp[:, :, :,
+                                                                              2] = math_function.b123_to_xyz(
+            main_class.a, noeh_dipole_full_not_over_dE[:, :, :, 0], noeh_dipole_full_not_over_dE[:, :, :, 1], noeh_dipole_full_not_over_dE[:, :, :, 2]
+        )
+
         noeh_dipole_full = noeh_dipole_full_temp * 1.00
+        noeh_dipole_full_not_over_dE = noeh_dipole_full_not_over_dE_temp * 1.00
 
         noeh_dipole_full = noeh_dipole_full[:, main_class.nv_in_file - main_class.nv_for_r:main_class.nv_in_file + main_class.nc_for_r,
                            main_class.nv_in_file - main_class.nv_for_r:main_class.nv_in_file + main_class.nc_for_r, :]
         noeh_dipole_partial = noeh_dipole_full[:, main_class.nv_for_r - main_class.nv:main_class.nv_for_r + main_class.nc, main_class.nv_for_r - main_class.nv:main_class.nv_for_r + main_class.nc, :]
+
+        noeh_dipole_full_not_over_dE = noeh_dipole_full_not_over_dE[:,
+                           main_class.nv_in_file - main_class.nv_for_r:main_class.nv_in_file + main_class.nc_for_r,
+                           main_class.nv_in_file - main_class.nv_for_r:main_class.nv_in_file + main_class.nc_for_r, :]
+        noeh_dipole_partial_not_over_dE = noeh_dipole_full_not_over_dE[:,
+                              main_class.nv_for_r - main_class.nv:main_class.nv_for_r + main_class.nc,
+                              main_class.nv_for_r - main_class.nv:main_class.nv_for_r + main_class.nc, :]
+
         print('finish reading dipoles from vmtxel')
-        return noeh_dipole_full, noeh_dipole_partial
+        return noeh_dipole_full, noeh_dipole_partial, noeh_dipole_full_not_over_dE, noeh_dipole_partial_not_over_dE
 
     def vmtxel_sort(self, vm,vm_sorted):
         '''

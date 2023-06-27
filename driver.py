@@ -13,9 +13,9 @@ if __name__ == '__main__':
 
 
     #optical.calculate_epsR_epsL_noeh(main_class)
-    #optical.calculate_epsR_epsL_eh(main_class)
+    optical.calculate_epsR_epsL_eh(main_class)
     #optical.calculate_absorption_noeh(main_class)
-    optical.calculate_absorption_eh(main_class)
+    #optical.calculate_absorption_eh(main_class)
     #optical.calculate_m(main_class)
 
     #kits.vc_contribution(main_class)

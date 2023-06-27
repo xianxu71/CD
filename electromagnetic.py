@@ -52,17 +52,19 @@ class electromagnetic:
         # eVtoJ = 1.602177e-19 # electron volt = ？Joule
         # p_ry_to_SI = 1.9928534e-24 # convert momentum operator to SI unit # ??
         # fact = (p_ry_to_SI ** 2) / m0 / eVtoJ # pre factor
-        fact = 1
-        datax = main_class.noeh_dipole_full[:, :, :, 0]
-        datay = main_class.noeh_dipole_full[:, :, :, 1]
-        dataz = main_class.noeh_dipole_full[:, :, :, 2]
+        fact = 2*1j
+        datax = main_class.noeh_dipole_full_not_over_dE [:, :, :, 0]
+        datay = main_class.noeh_dipole_full_not_over_dE[:, :, :, 1]
+        dataz = main_class.noeh_dipole_full_not_over_dE[:, :, :, 2]
+
+
 
         L = np.zeros([main_class.nk, main_class.nv_for_r, main_class.nc_for_r, 3], dtype=np.complex)
 
         Ekv = np.einsum('kv,m->kvm', main_class.energy_dft_full[:, 0:main_class.nv_for_r], np.ones(main_class.nv_for_r + main_class.nc_for_r))
         Ekm = np.einsum('km,v->kvm', main_class.energy_dft_full, np.ones(main_class.nv_for_r))
 
-        energy_diff = (Ekv - Ekm)  # e_diff(k,v,m) = [E(k,v) - E(k,m)]^-1
+        energy_diff = (Ekv - Ekm)  # e_diff(k,v,m) = [E(k,v) - E(k,m)]^-1, unit: ryd
         with np.errstate(divide='ignore'):
             energy_diff_inverse = 1 / energy_diff
             energy_diff_inverse[abs(energy_diff) < main_class.degeneracy_remover] = 0
@@ -79,6 +81,16 @@ class electromagnetic:
                          datay[:, :, main_class.nv_for_r:main_class.nv_for_r + main_class.nc_for_r]) - \
                np.einsum('kvm,kvm,kmc-> kvc', datay[:, 0:main_class.nv_for_r, :], energy_diff_inverse,
                          datax[:, :, main_class.nv_for_r:main_class.nv_for_r + main_class.nc_for_r])
+        for ik in range(main_class.nk):
+            for iv in range(main_class.nv_for_r):
+                for ic in range(main_class.nc_for_r):
+                    energy_diff_for_cancel_diple = main_class.energy_dft_full[ik,iv] - main_class.energy_dft_full[ik,ic+main_class.nv_for_r]
+                    energy_diff_for_cancel_diple_inv = 1/energy_diff_for_cancel_diple
+                    totx[ik,iv,ic] = totx[ik,iv,ic]*energy_diff_for_cancel_diple_inv
+                    toty[ik, iv, ic] = toty[ik, iv, ic] * energy_diff_for_cancel_diple_inv
+                    totz[ik, iv, ic] = totz[ik, iv, ic] * energy_diff_for_cancel_diple_inv
+
+
         L[:, :, :, 0] = totx * fact
         L[:, :, :, 1] = toty * fact
         L[:, :, :, 2] = totz * fact

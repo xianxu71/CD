@@ -45,5 +45,7 @@ class main_class:
             h5_file_w.create_dataset('ME', data=self.ME)
             h5_file_w.create_dataset('noeh_dipole_full', data=self.noeh_dipole_full)
             h5_file_w.create_dataset('noeh_dipole', data=self.noeh_dipole)
+            h5_file_w.create_dataset('noeh_dipole_full_not_over_dE', data=self.noeh_dipole_full_not_over_dE)
+            h5_file_w.create_dataset('noeh_dipole_not_over_dE', data=self.noeh_dipole_not_over_dE)
             print('write temp matrices to temp.h5')
             h5_file_w.close()
