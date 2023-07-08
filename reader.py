@@ -8,7 +8,7 @@ class reader:
     read data from input files
     """
     def __init__(self, main_class):
-        main_class.energy_dft_full, main_class.energy_dft = self.read_dft_energy(main_class)
+        main_class.energy_dft_full, main_class.energy_dft, main_class.energy_in_file = self.read_dft_energy(main_class)
         if main_class.read_temp:
             h5_file_r = h5.File(main_class.input_folder+'temp.h5', 'r')
             main_class.noeh_dipole_full = np.array(h5_file_r.get('noeh_dipole_full'))
@@ -23,9 +23,16 @@ class reader:
         main_class.avck = self.avck_reader(main_class) #read Acvk from eigenvectors.h5
         main_class.excited_energy = self.read_excited_energy(main_class) #read exciton energy
         main_class.volume = self.read_volume(main_class)
+        main_class.rk = self.rkreader(main_class)
         #main_class.eqp_corr = self.read_eqp(main_class)
         if main_class.use_eqp:
             main_class.eqp_corr = self.read_eqp(main_class) #read quasiparticle energy correction from eqp.dat
+    def rkreader(self,main_class):
+        input_file = main_class.input_folder + 'eigenvectors.h5'
+        f = h5.File(input_file, 'r')
+        rk = f['exciton_header/kpoints/kpts'][()]
+        f.close()
+        return rk
     def read_volume(self,main_class):
         input_file = main_class.input_folder + 'eigenvectors.h5'
         f = h5.File(input_file, 'r')
@@ -69,7 +76,7 @@ class reader:
         energy = energy_full[0, :, main_class.hovb - main_class.nv: main_class.hovb + main_class.nc]
         f.close()
         print('finish reading dft energy')
-        return energy_full[0, :, main_class.hovb - main_class.nv_for_r: main_class.hovb + main_class.nc_for_r], energy
+        return energy_full[0, :, main_class.hovb - main_class.nv_for_r: main_class.hovb + main_class.nc_for_r], energy, energy_full[0, :, main_class.hovb - main_class.nv_in_file: main_class.hovb + main_class.nc_in_file]
 
 
     def read_noeh_dipole(self, main_class):
@@ -119,8 +126,8 @@ class reader:
                     v1 = v1_real + 1j * v1_imag
                     v2 = v2_real + 1j * v2_imag
                     v3 = v3_real + 1j * v3_imag
-                    ediff = (main_class.energy_dft_full[ik, ib1] - main_class.energy_dft_full[ik, ib2])
-                    if np.abs(main_class.energy_dft_full[ik, ib1] - main_class.energy_dft_full[ik, ib2])<0.0000000000001:
+                    ediff = (main_class.energy_in_file[ik, ib1] - main_class.energy_in_file[ik, ib2])
+                    if np.abs(main_class.energy_in_file[ik, ib1] - main_class.energy_in_file[ik, ib2])<0.0000000000001:
                         ediff_inv = 0
                     else:
                         ediff_inv = 1/ediff

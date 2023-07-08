@@ -2,14 +2,15 @@ import numpy as np
 import reader
 import electromagnetic
 import h5py as h5
-
+import reader_length
+import electromagnetic_length
 class main_class:
     '''
     This is the main class where most parameters and data store
     '''
     def __init__(self, nk, nc, nv, nc_for_r, nv_for_r, nc_in_file, nv_in_file,
                  hovb, nxct, input_folder, W, eta , use_eqp, write_temp, read_temp,
-                 energy_shift, eps1_correction, degeneracy_remover, a, spinor):
+                 energy_shift, eps1_correction, degeneracy_remover, a, spinor, use_length, nc_for_length, nv_for_length):
         """
         intialize main_class from input.py and all the input files
         """
@@ -33,16 +34,25 @@ class main_class:
         self.degeneracy_remover = degeneracy_remover
         self.a = a
         self.spinor = spinor
+        self.use_length = use_length
+        self.nc_for_length = nc_for_length
+        self.nv_for_length = nv_for_length
 
-        self.reader = reader.reader(self) #read all the data from input file
-        self.electromagnetic = electromagnetic.electromagnetic(self) #calculate all the electromagnetic matrices
+
+
+        if not self.use_length:
+            self.reader = reader.reader(self) #read all the data from input file
+            self.electromagnetic = electromagnetic.electromagnetic(self) #calculate all the electromagnetic matrices
+        else:
+            self.reader = reader_length.reader(self)
+            self.electromagnetic = electromagnetic_length.electromagnetic(self)
 
         if self.write_temp:
             h5_file_w = h5.File(self.input_folder+'temp.h5','w')
-            h5_file_w.create_dataset('L_kvc',data = self.L_kvc)
+            #h5_file_w.create_dataset('L_kvc',data = self.L_kvc)
             h5_file_w.create_dataset('E_kvc', data=self.E_kvc)
-            h5_file_w.create_dataset('MM', data=self.MM)
-            h5_file_w.create_dataset('ME', data=self.ME)
+            #h5_file_w.create_dataset('MM', data=self.MM)
+            #h5_file_w.create_dataset('ME', data=self.ME)
             h5_file_w.create_dataset('noeh_dipole_full', data=self.noeh_dipole_full)
             h5_file_w.create_dataset('noeh_dipole', data=self.noeh_dipole)
             h5_file_w.create_dataset('noeh_dipole_full_not_over_dE', data=self.noeh_dipole_full_not_over_dE)
