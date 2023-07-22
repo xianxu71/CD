@@ -14,10 +14,10 @@ if __name__ == '__main__':
                                        nc_for_length, nv_for_length)
 
 
-    optical.calculate_epsR_epsL_noeh(main_class)
+    #optical.calculate_epsR_epsL_noeh(main_class)
     #optical.calculate_epsR_epsL_eh(main_class)
     #optical.calculate_absorption_noeh(main_class)
-    #optical.calculate_absorption_eh(main_class)
+    optical.calculate_absorption_eh(main_class)
     #optical.calculate_m_eh(main_class)
     #optical.calculate_m_noeh(main_class)
 

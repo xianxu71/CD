@@ -205,9 +205,9 @@ def calculate_epsR_epsL_eh(main_class):
 
     plt.plot(W, Y1_eps2+ (Y2_eps2_0 - Y1_eps2_0)/2 , 'g', label='L', linewidth=0.5)
     plt.plot(W, Y2_eps2- (Y2_eps2_0 - Y1_eps2_0)/2 , 'b', label='R', linewidth=0.5)
-    plt.plot(W, ((Y2_eps2 - Y1_eps2) - (Y2_eps2_0 - Y1_eps2_0))*200, 'r', label='CD', linewidth=0.5)
+    plt.plot(W, ((Y2_eps2 - Y1_eps2) - (Y2_eps2_0 - Y1_eps2_0))*100, 'r', label='CD', linewidth=0.5)
 
-    #plt.plot(W, Y1_eps2-Y1_eps2_0 , 'g', label='L', linewidth=0.5)
+    #plt.plot(W, Y1_eps2-Y1_eps2_0 , 'g', label='L', linewidth=0.5)![](../../../../../var/folders/19/wr_kxbh13vz607g6wqhwk96m0000gn/T/TemporaryItems/NSIRD_screencaptureui_O911PG/Screen Shot 2023-07-10 at 4.19.48 PM.png)
     #plt.plot(W, Y2_eps2-Y2_eps2_0  , 'b', label='R', linewidth=0.5)
     #plt.plot(W, ((Y2_eps2 - Y1_eps2) - (Y2_eps2_0 - Y1_eps2_0)), 'r',  linewidth=0.5)
     #plt.plot(W, ((Y2_eps2 - Y1_eps2) - (Y2_eps2_0 - Y1_eps2_0)), 'r', label='R-L', linewidth=0.5)
@@ -219,9 +219,9 @@ def calculate_epsR_epsL_eh(main_class):
     plt.close()
 
     #data = np.array([W, deps_2_L, deps_2_R])
-    #data = np.array([W, ((Y2_eps2 - Y1_eps2) - (Y2_eps2_0 - Y1_eps2_0)),((Y2_eps1 - Y1_eps1) - (Y2_eps1_0 - Y1_eps1_0))])
+    data = np.array([W,Y1_eps2+ (Y2_eps2_0 - Y1_eps2_0)/2, ((Y2_eps2 - Y1_eps2) - (Y2_eps2_0 - Y1_eps2_0)), ((Y2_eps1 - Y1_eps1) - (Y2_eps1_0 - Y1_eps1_0))])
     #data2 = np.array([W,Y1_eps2_0,Y2_eps2_0])
-    #np.savetxt(main_class.input_folder+'CD.dat', data.T)
+    np.savetxt(main_class.input_folder+'CD.dat', data.T)
 
     return
 
@@ -251,7 +251,7 @@ def calculate_absorption_eh(main_class):
         energyDif = excited_energy[s]+energy_shift
         #E = (ME[s, 0] + 1j * ME[s, 1]) / 2.17 / 2 ** 0.5
         #E = (1*ME[s, 0]+1j*ME[s, 1])/np.sqrt(2)
-        E = (1 * ME[s, 0] )
+        E = (1 * ME[s, 0] + 1j* ME[s, 1])/np.sqrt(2)
         eps_2 += (abs(E)) ** 2 * delta_gauss(W, energyDif, eta)*RYD
         eps_1 += (abs(E)) ** 2 * delta_lorentzian(W, energyDif, eta)*(energyDif-W)/eta*RYD
         #eps_1 += -(abs(E)) ** 2 * delta_lorentzian(-W / RYD, energyDif / RYD, eta / RYD) * (energyDif + W) / eta / RYD
